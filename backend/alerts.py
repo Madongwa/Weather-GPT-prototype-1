@@ -90,7 +90,14 @@ def _advance_due_alerts(conn, now: datetime) -> None:
         "SELECT * FROM alerts WHERE next_stage_at IS NOT NULL AND next_stage_at < ?", (now.isoformat(),)
     ).fetchall()
     for row in due:
-        next_status = STATUSES[STATUSES.index(row["status"]) + 1]
+        current_index = STATUSES.index(row["status"])
+        if current_index >= len(STATUSES) - 1:
+            # Already Resolved (terminal) — shouldn't happen through any
+            # real code path (Resolved rows get next_stage_at set back to
+            # NULL below), but skip rather than index out of range if it
+            # ever does.
+            continue
+        next_status = STATUSES[current_index + 1]
         next_duration = STAGE_DURATIONS.get(next_status)
         next_stage_at = (now + next_duration).isoformat() if next_duration else None
         expires_at = row["expires_at"]

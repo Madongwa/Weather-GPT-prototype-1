@@ -13,6 +13,7 @@ environment that produced this file — run it and fix anything that
 doesn't pass; treat this file as reviewed-but-unexecuted.
 """
 
+import admin
 import db
 import main
 from fastapi.testclient import TestClient
@@ -53,7 +54,12 @@ def test_alerts_unknown_scenario(tmp_path, monkeypatch):
 
 
 def test_admin_login_and_issue_alert(tmp_path, monkeypatch):
-    monkeypatch.setenv("ADMIN_PASSWORD", "test-password")
+    # admin.py does `from auth import ADMIN_PASSWORD`, copying the value
+    # into its own namespace at import time — setting the env var here
+    # has no effect on that already-bound name, and neither would
+    # patching auth.ADMIN_PASSWORD (a separate binding by now). Patch
+    # the name actually used inside admin.py's login() route.
+    monkeypatch.setattr(admin, "ADMIN_PASSWORD", "test-password")
     client = make_client(tmp_path, monkeypatch)
     with client:
         bad_login = client.post("/admin/login", json={"password": "wrong"})
@@ -71,9 +77,15 @@ def test_admin_login_and_issue_alert(tmp_path, monkeypatch):
         assert issued.status_code == 200
         assert issued.json()["status"] == "Issued"
 
+        # An invalid token (rather than a missing header) exercises
+        # require_admin's own 401 logic — a completely absent
+        # Authorization header is rejected earlier, by FastAPI's own
+        # required-header validation (422), the same behavior already
+        # covered by test_sos_requires_device_id below.
         unauthorized = client.post(
             "/alerts",
             json={"hazard_type": "Flood", "severity": "Be careful", "description": "Test alert"},
+            headers={"Authorization": "Bearer not-a-real-token"},
         )
         assert unauthorized.status_code == 401
 
