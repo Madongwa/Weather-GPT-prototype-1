@@ -1,34 +1,51 @@
 import { useAppSettings } from '../../context/AppSettingsContext'
+import { useAsk } from '../../context/AskContext'
 import GroundedFooter from '../GroundedFooter/GroundedFooter'
 import DemoTag from '../DemoTag/DemoTag'
 import './AnswerCard.css'
 
-// Placeholder content — real answers (and real timestamps) arrive once
-// the weather/arbiter logic is built. For now this just proves the layout.
-const SAMPLE_ANSWER = 'Storm likely by 2 PM — hold off on harvesting until tomorrow.'
-
 /**
  * The slim card below the mic bubble showing the latest answer, plus a
  * footer row indicating it's "Grounded" (backed by real sources) and
- * where/when it came from. The source label swaps to "Cached" when
- * offline, since we'd be showing a stored answer rather than a fresh one.
+ * where/when it came from. This is the only place a mobile visitor ever
+ * sees an answer — the desktop conversation-history pane (see
+ * AskScreen.css) is hidden below the 900px breakpoint — so it reads the
+ * real conversation from AskContext (shared with Home's hero card and
+ * the desktop history) rather than a static placeholder.
  *
- * Reads `isOnline` and `demoMode` from Context instead of taking them as
- * props — this card is used from the Ask screen today, but the same
- * pattern (grounded answer + demo tag) will show up on Alerts and My
- * Advice too, and Context means none of those call sites have to know
- * or care about wiring these two values through.
+ * Reads `demoMode` from Context instead of taking it as a prop — the
+ * same pattern (grounded answer + demo tag) will show up on Alerts and
+ * My Advice too, and Context means none of those call sites have to
+ * know or care about wiring it through.
  */
 function AnswerCard() {
-  const { isOnline, demoMode } = useAppSettings()
-  const sourceLabel = isOnline ? 'IMD + Open-Meteo · 12 min ago' : 'Cached · 12 min ago'
+  const { demoMode } = useAppSettings()
+  const { conversation } = useAsk()
+  const latestTurn = conversation[conversation.length - 1]
+
+  if (!latestTurn) return null
 
   return (
     <div className="answer-card">
       {demoMode === 'demo' && <DemoTag />}
-      <p className="answer-card__text">{SAMPLE_ANSWER}</p>
+      <p className="answer-card__text">{latestTurn.answer}</p>
 
-      <GroundedFooter grounded sourceLabel={sourceLabel} />
+      <GroundedFooter grounded={latestTurn.grounded} sourceLabel={latestTurn.sourceLabel} />
+
+      {latestTurn.sources?.length > 0 && (
+        <div className="answer-card__sources">
+          <span className="answer-card__sources-label">Based on:</span>
+          <ul className="answer-card__sources-list">
+            {latestTurn.sources.map((source) => (
+              <li key={source.url}>
+                <a href={source.url} target="_blank" rel="noopener noreferrer">
+                  {source.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
