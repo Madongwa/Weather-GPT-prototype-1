@@ -29,3 +29,13 @@ const AP_DISTRICTS = new Set(['Visakhapatnam', 'Vijayawada (NTR)', 'Guntur', 'Kr
 export function stateForDistrict(district) {
   return AP_DISTRICTS.has(district) ? 'Andhra Pradesh' : 'Telangana'
 }
+
+// Which sample districts actually touch the coast — a strict subset of
+// AP_DISTRICTS above (Chittoor is AP but inland, so it's excluded here).
+// Used to gate fisherman-role advice: sea/coastal guidance only makes
+// sense for someone actually near the coast, not every AP district.
+const COASTAL_DISTRICTS = new Set(['Visakhapatnam', 'Vijayawada (NTR)', 'Guntur', 'Krishna'])
+
+export function isCoastalDistrict(district) {
+  return COASTAL_DISTRICTS.has(district)
+}

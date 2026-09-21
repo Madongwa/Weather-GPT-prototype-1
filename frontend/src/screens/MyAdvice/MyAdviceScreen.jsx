@@ -6,6 +6,7 @@ import { stepsForRole } from '../../data/adviceRules'
 import { SAMPLE_WEATHER } from '../../data/sampleWeather'
 import ListenButton from '../../components/ListenButton/ListenButton'
 import DemoTag from '../../components/DemoTag/DemoTag'
+import RouteCheck from './RouteCheck'
 import './MyAdviceScreen.css'
 
 /**
@@ -23,7 +24,7 @@ function MyAdviceScreen() {
 
   const { data: liveWeather } = useWeather(isDemo ? null : district)
   const weather = isDemo ? SAMPLE_WEATHER : liveWeather
-  const steps = stepsForRole(role, weather)
+  const steps = stepsForRole(role, weather, { district })
 
   const askAboutStep = (stepText) => {
     navigate('/ask', { state: { prefill: `About this advice: "${stepText}"` } })
@@ -64,6 +65,8 @@ function MyAdviceScreen() {
           ))}
         </ol>
       )}
+
+      {role === 'Driver' && <RouteCheck origin={district} isDemo={isDemo} />}
     </div>
   )
 }

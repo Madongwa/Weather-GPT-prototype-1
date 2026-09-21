@@ -15,8 +15,8 @@ import './AdviceTeaser.css'
  * that /role (Your Role) uses — selecting one here is the same action,
  * just reachable without leaving Home.
  */
-function AdviceTeaser({ role, setRole, weather, isDemo }) {
-  const { doStep, avoidStep } = topDoAndAvoid(role, weather)
+function AdviceTeaser({ role, setRole, weather, isDemo, district }) {
+  const { doStep, avoidStep } = topDoAndAvoid(role, weather, { district })
 
   return (
     <section id="advice-teaser" className="advice-teaser">

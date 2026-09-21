@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAsk } from '../../context/AskContext'
 import SpeakButton from '../../components/SpeakButton/SpeakButton'
 import AnswerCard from '../../components/AnswerCard/AnswerCard'
@@ -63,6 +63,11 @@ function AskScreen() {
         </div>
 
         <AskInputBar value={draft} onValueChange={setDraft} onSubmit={handleAsk} />
+
+        <p className="ask-screen__disclaimer">
+          Answers here are factual — for what to do, see{' '}
+          <Link to="/advice">My Advice</Link>.
+        </p>
       </div>
 
       <aside className="ask-screen__history" aria-label="Conversation history">

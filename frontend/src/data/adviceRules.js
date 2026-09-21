@@ -1,7 +1,10 @@
-// Data-driven rules: { id, type, roleTags, predicate(weather), stepText }.
+import { isCoastalDistrict } from '../constants/districts'
+
+// Data-driven rules: { id, type, roleTags, predicate(weather, context), stepText }.
 // `roleTags` includes '*' for "applies to every role". `predicate`
 // receives the normalized weather object from useWeather (or null when
-// unavailable) and decides whether this rule is relevant right now.
+// unavailable) plus a small `context` object (currently just
+// `{ district }`) and decides whether this rule is relevant right now.
 // Keeping rules as data (not scattered if/else in a component) is what
 // makes it easy to swap in a real deterministic rules engine later
 // without touching either screen that reads this file.
@@ -36,8 +39,15 @@ export const ADVICE_RULES = [
     id: 'fisherman-wind',
     type: 'do',
     roleTags: ['Fisherman'],
-    predicate: (w) => Boolean(w && w.wind_speed_kmh >= 30),
+    predicate: (w, ctx) => Boolean(isCoastalDistrict(ctx?.district) && w && w.wind_speed_kmh >= 30),
     stepText: 'Strong winds — avoid going out to sea until conditions ease.',
+  },
+  {
+    id: 'fisherman-no-coast',
+    type: 'do',
+    roleTags: ['Fisherman'],
+    predicate: (_w, ctx) => Boolean(ctx?.district) && !isCoastalDistrict(ctx.district),
+    stepText: 'This district has no coastal access — sea-condition advice will show for a coastal district instead.',
   },
   {
     id: 'outdoor-worker-storm',
@@ -100,8 +110,15 @@ export const AVOID_RULES = [
     id: 'avoid-fisherman',
     type: 'avoid',
     roleTags: ['Fisherman'],
-    predicate: () => true,
+    predicate: (_w, ctx) => isCoastalDistrict(ctx?.district),
     stepText: 'Avoid going out to sea when wind speeds exceed 30 km/h.',
+  },
+  {
+    id: 'avoid-fisherman-no-coast',
+    type: 'avoid',
+    roleTags: ['Fisherman'],
+    predicate: (_w, ctx) => Boolean(ctx?.district) && !isCoastalDistrict(ctx.district),
+    stepText: 'Avoid relying on this advice for sea conditions — this district has no coastline.',
   },
   {
     id: 'avoid-outdoor-worker',
@@ -140,13 +157,13 @@ export const AVOID_RULES = [
   },
 ]
 
-function matches(rule, role, weather) {
-  return (rule.roleTags.includes('*') || rule.roleTags.includes(role)) && rule.predicate(weather)
+function matches(rule, role, weather, context) {
+  return (rule.roleTags.includes('*') || rule.roleTags.includes(role)) && rule.predicate(weather, context)
 }
 
 /** Every DO step that currently applies — used by the full My Advice screen. */
-export function stepsForRole(role, weather) {
-  return ADVICE_RULES.filter((rule) => matches(rule, role, weather))
+export function stepsForRole(role, weather, context) {
+  return ADVICE_RULES.filter((rule) => matches(rule, role, weather, context))
 }
 
 /**
@@ -155,8 +172,8 @@ export function stepsForRole(role, weather) {
  * matching tag even if none of its (always-true) predicates could ever
  * fail, since AVOID_RULES has no weather-conditional entries today.
  */
-export function topDoAndAvoid(role, weather) {
-  const doStep = ADVICE_RULES.find((rule) => matches(rule, role, weather))
-  const avoidStep = AVOID_RULES.find((rule) => matches(rule, role, weather))
+export function topDoAndAvoid(role, weather, context) {
+  const doStep = ADVICE_RULES.find((rule) => matches(rule, role, weather, context))
+  const avoidStep = AVOID_RULES.find((rule) => matches(rule, role, weather, context))
   return { doStep, avoidStep }
 }

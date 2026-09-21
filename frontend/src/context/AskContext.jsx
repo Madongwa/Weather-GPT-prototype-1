@@ -55,7 +55,12 @@ export function AskProvider({ children }) {
 
     try {
       const data = await askQuestion({ question, district, role })
-      updateTurn(id, { answer: data.answer, grounded: data.grounded, sourceLabel: data.source_label })
+      updateTurn(id, {
+        answer: data.answer,
+        grounded: data.grounded,
+        sourceLabel: data.source_label,
+        sources: data.sources ?? [],
+      })
     } catch {
       updateTurn(id, {
         answer: 'Could not reach the backend just now.',

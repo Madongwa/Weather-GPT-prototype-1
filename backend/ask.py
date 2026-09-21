@@ -38,6 +38,11 @@ forecasts that aren't in that data. If neither is available, say plainly that \
 live data isn't available right now, and give only general, non-specific safety \
 guidance.
 
+Stick to facts — what the weather is and is forecast to be. Don't give step-by-step \
+action plans, checklists, or "you should do X" instructions here; if the user is \
+really asking what to do, answer the factual part and point them to the app's \
+"My Advice" section for role-specific guidance instead of improvising a plan.
+
 Always end with a short reminder that this is decision support, not an official \
 instruction, and to follow IMD/government warnings first."""
 

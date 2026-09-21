@@ -177,7 +177,7 @@ function HomeScreen() {
 
       <NextHoursStrip hourly={weather?.hourly} />
 
-      <AdviceTeaser role={role} setRole={setRole} weather={weather} isDemo={isDemo} />
+      <AdviceTeaser role={role} setRole={setRole} weather={weather} isDemo={isDemo} district={district} />
 
       <div className="home-screen__checkin">
         <h3 className="home-screen__checkin-title">{t('home.checkIn')}</h3>

@@ -9,7 +9,7 @@ import './ChatTurn.css'
  * AnswerCard uses — so scrolling this list is a live demonstration of
  * the grounding/citation feature, not just a chat transcript.
  */
-function ChatTurn({ question, answer, grounded, sourceLabel }) {
+function ChatTurn({ question, answer, grounded, sourceLabel, sources }) {
   return (
     <div className="chat-turn">
       <p className="chat-turn__question">{question}</p>
@@ -20,6 +20,20 @@ function ChatTurn({ question, answer, grounded, sourceLabel }) {
           <ListenButton text={answer} />
         </div>
         <GroundedFooter grounded={grounded} sourceLabel={sourceLabel} />
+        {sources?.length > 0 && (
+          <div className="chat-turn__sources">
+            <span className="chat-turn__sources-label">Based on:</span>
+            <ul className="chat-turn__sources-list">
+              {sources.map((source) => (
+                <li key={source.url}>
+                  <a href={source.url} target="_blank" rel="noopener noreferrer">
+                    {source.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   )

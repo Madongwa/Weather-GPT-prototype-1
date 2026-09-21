@@ -37,6 +37,17 @@
   }
 }
 
+.ask-screen__disclaimer {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-faint);
+  text-align: center;
+}
+
+.ask-screen__disclaimer a {
+  color: var(--color-accent);
+}
+
 /* Conversation history only exists as a desktop concept for now —
    hidden below the breakpoint rather than not rendered, see AskScreen.jsx. */
 .ask-screen__history {
