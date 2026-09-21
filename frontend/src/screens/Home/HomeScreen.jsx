@@ -5,6 +5,7 @@ import { Geolocation } from '@capacitor/geolocation'
 import { useAppSettings } from '../../context/AppSettingsContext'
 import { useAsk } from '../../context/AskContext'
 import { useWeather } from '../../hooks/useWeather'
+import { useAlerts } from '../../hooks/useAlerts'
 import { findNearestDistrict } from '../../utils/nearestDistrict'
 import { createCheckin } from '../../api/checkins'
 import { whatsAppShareUrl } from '../../utils/share'
@@ -16,6 +17,7 @@ import HomeHeader from './HomeHeader'
 import WeatherSnapshotCard from './WeatherSnapshotCard'
 import NextHoursStrip from './NextHoursStrip'
 import AdviceTeaser from './AdviceTeaser'
+import VerdictCard from './VerdictCard'
 import './HomeScreen.css'
 
 function scrollToSection(id) {
@@ -44,6 +46,7 @@ function HomeScreen() {
   const { data, error, loading } = useWeather(isDemo ? null : district)
   const weather = isDemo ? SAMPLE_WEATHER : data
   const grounded = isDemo || Boolean(data)
+  const { alerts, usingSampleAlerts } = useAlerts(district)
   const sourceLabel = isDemo
     ? 'Sample data'
     : loading
@@ -104,6 +107,14 @@ function HomeScreen() {
   return (
     <div className="home-screen">
       <HomeHeader />
+
+      <VerdictCard
+        alerts={alerts}
+        alertsUnavailable={usingSampleAlerts}
+        weatherGrounded={grounded}
+        district={district}
+        isDemo={isDemo}
+      />
 
       <button type="button" className="home-screen__location-link" onClick={handleUseLocation} disabled={locating}>
         {locating ? t('home.locating') : t('home.useMyLocation')}
