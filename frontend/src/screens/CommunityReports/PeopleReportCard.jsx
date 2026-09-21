@@ -1,3 +1,4 @@
+import { parseUtcDate } from '../../utils/parseUtcDate'
 import './PeopleReportCard.css'
 
 /**
@@ -10,7 +11,7 @@ function PeopleReportCard({ report }) {
     <div className="people-report-card">
       <div className="people-report-card__top">
         <span className="people-report-card__type">{report.report_type}</span>
-        <span className="people-report-card__time">{new Date(report.created_at).toLocaleString()}</span>
+        <span className="people-report-card__time">{parseUtcDate(report.created_at).toLocaleString()}</span>
       </div>
       {report.location_text && <p className="people-report-card__location">📍 {report.location_text}</p>}
       {report.description && <p className="people-report-card__description">{report.description}</p>}

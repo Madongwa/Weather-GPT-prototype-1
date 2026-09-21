@@ -1,7 +1,20 @@
+/* Sticky, not just in-flow: the hamburger here is the ONLY way to open
+   the nav drawer on mobile (no persistent sidebar there), and the page
+   itself scrolls as one long document (see AppShell.css — .shell__main
+   has no independent scroll container). Without this, scrolling down
+   any screen taller than one viewport — which is most of them — carries
+   the hamburger off-screen with no way back to navigation short of
+   scrolling all the way back up. A solid background is needed since
+   this now sits above scrolling content, not just other static chrome. */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--color-bg);
+  padding: var(--space-2) 0;
 }
 
 .header__menu-btn {

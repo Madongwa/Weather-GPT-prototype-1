@@ -57,6 +57,10 @@ function AdminIssuePanel({ district, onIssued }) {
           placeholder="Admin password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          autoCapitalize="none"
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
         />
         <button type="submit" className="admin-issue-panel__submit">
           Sign in

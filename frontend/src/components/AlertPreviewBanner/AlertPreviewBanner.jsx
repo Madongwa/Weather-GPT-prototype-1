@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAlerts } from '../../hooks/useAlerts'
+import { parseUtcDate } from '../../utils/parseUtcDate'
 import './AlertPreviewBanner.css'
 
 const SEVERITY_MODIFIER = {
@@ -8,8 +9,8 @@ const SEVERITY_MODIFIER = {
   'Be careful': 'careful',
 }
 
-function timeAgo(isoTime) {
-  const minutes = Math.max(0, Math.round((Date.now() - new Date(isoTime).getTime()) / 60000))
+function timeAgo(sqliteTimestamp) {
+  const minutes = Math.max(0, Math.round((Date.now() - parseUtcDate(sqliteTimestamp).getTime()) / 60000))
   if (minutes < 1) return 'just now'
   if (minutes < 60) return `Issued ${minutes}m ago`
   return `Issued ${Math.round(minutes / 60)}h ago`

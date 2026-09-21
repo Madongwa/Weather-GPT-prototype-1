@@ -5,6 +5,7 @@ import { advanceAlert, getAlert } from '../../api/alerts'
 import SeverityTag from '../../components/SeverityTag/SeverityTag'
 import LifecycleStepper from '../../components/LifecycleStepper/LifecycleStepper'
 import ListenButton from '../../components/ListenButton/ListenButton'
+import { parseUtcDate } from '../../utils/parseUtcDate'
 import './AlertDetailScreen.css'
 
 const SESSION_KEY = 'weathergpt.adminToken'
@@ -76,9 +77,9 @@ function AlertDetailScreen() {
         <dt>District</dt>
         <dd>{alert.district ?? 'Not specified'}</dd>
         <dt>Issued</dt>
-        <dd>{new Date(alert.created_at).toLocaleString()}</dd>
+        <dd>{parseUtcDate(alert.created_at).toLocaleString()}</dd>
         <dt>Valid until</dt>
-        <dd>{alert.expires_at ? new Date(alert.expires_at).toLocaleString() : 'Ongoing'}</dd>
+        <dd>{alert.expires_at ? parseUtcDate(alert.expires_at).toLocaleString() : 'Ongoing'}</dd>
         <dt>Source</dt>
         <dd>{alert.is_simulated ? 'Scenario simulator (Trust & Sources)' : 'Official'}</dd>
       </dl>

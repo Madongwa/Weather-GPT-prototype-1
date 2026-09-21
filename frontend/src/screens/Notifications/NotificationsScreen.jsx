@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { listNotifications, markAllNotificationsRead, markNotificationRead } from '../../api/notifications'
 import ListenButton from '../../components/ListenButton/ListenButton'
+import { parseUtcDate } from '../../utils/parseUtcDate'
 import './NotificationsScreen.css'
 
 /**
@@ -76,7 +77,7 @@ function NotificationsScreen() {
               <p className="notifications-screen__item-title">{notification.title}</p>
               <p className="notifications-screen__item-text">{notification.body}</p>
               <p className="notifications-screen__item-time">
-                {new Date(notification.created_at).toLocaleString()}
+                {parseUtcDate(notification.created_at).toLocaleString()}
               </p>
             </div>
             <div className="notifications-screen__item-actions">
