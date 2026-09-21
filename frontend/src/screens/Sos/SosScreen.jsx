@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppSettings } from '../../context/AppSettingsContext'
-import { listSos, sendSos } from '../../api/sos'
+import { listSos, relaySos, sendSos } from '../../api/sos'
 import './SosScreen.css'
 
 const QUICK_NEEDS = ['I am here', 'Doctor', 'Water', 'Food', 'Danger', 'Trapped', 'Road blocked', 'I am safe']
@@ -23,6 +23,7 @@ function SosScreen() {
   const [armed, setArmed] = useState(false)
   const [sentLog, setSentLog] = useState([])
   const [sendError, setSendError] = useState('')
+  const [relayingId, setRelayingId] = useState(null)
   const armTimer = useRef(null)
 
   useEffect(() => {
@@ -65,6 +66,25 @@ function SosScreen() {
       setDetail('')
     } catch {
       setSendError('Could not send just now — check your connection and try again.')
+    }
+  }
+
+  // The one real state change behind "Simulate relay": a per-message
+  // button (not the always-animating decoration above it) that actually
+  // calls the backend and updates that message's own relay_status once
+  // it returns — still a simulation (see the hop-path caption's own
+  // caveat), but now backed by a real request/response instead of pure
+  // CSS animation.
+  const handleRelay = async (sosId) => {
+    setRelayingId(sosId)
+    try {
+      const updated = await relaySos(sosId)
+      setSentLog((prev) => prev.map((entry) => (entry.id === sosId ? updated : entry)))
+    } catch {
+      // Best-effort demo action — leave the entry as it was, the button
+      // stays available so the person can just try again.
+    } finally {
+      setRelayingId(null)
     }
   }
 
@@ -150,8 +170,26 @@ function SosScreen() {
         <ul className="sos-screen__log">
           {sentLog.map((entry) => (
             <li key={entry.id} className="sos-screen__log-item">
-              <span>{entry.needs.join(', ') || 'SOS'}</span>
-              <span className="sos-screen__log-status">{entry.status}</span>
+              <div className="sos-screen__log-row">
+                <span>{entry.needs.join(', ') || 'SOS'}</span>
+                <span className="sos-screen__log-status">{entry.status}</span>
+              </div>
+              <div className="sos-screen__log-relay">
+                {entry.relay_status ? (
+                  <span className="sos-screen__log-relay-done">
+                    <span aria-hidden="true">📱 → 📡</span> {entry.relay_status}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    className="sos-screen__relay-button"
+                    onClick={() => handleRelay(entry.id)}
+                    disabled={relayingId === entry.id}
+                  >
+                    {relayingId === entry.id ? 'Relaying…' : 'Simulate relay'}
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>

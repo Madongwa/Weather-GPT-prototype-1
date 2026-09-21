@@ -62,6 +62,7 @@ def init_db():
                 detail TEXT,
                 district TEXT,
                 status TEXT NOT NULL DEFAULT 'Sending',
+                relay_status TEXT,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
 

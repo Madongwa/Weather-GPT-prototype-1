@@ -176,8 +176,8 @@
 
 .sos-screen__log-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
   background: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
   border-radius: 10px;
@@ -185,7 +185,40 @@
   font-size: 0.82rem;
 }
 
+.sos-screen__log-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .sos-screen__log-status {
+  color: var(--color-teal);
+  font-weight: 600;
+}
+
+.sos-screen__log-relay {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sos-screen__relay-button {
+  background: none;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sos-screen__relay-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.sos-screen__log-relay-done {
+  font-size: 0.75rem;
   color: var(--color-teal);
   font-weight: 600;
 }
