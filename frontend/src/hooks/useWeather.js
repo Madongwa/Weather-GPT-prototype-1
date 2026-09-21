@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-// Same local dev address pattern as useHealthCheck.js.
-const WEATHER_URL = 'http://127.0.0.1:8000/weather'
+// Same VITE_API_BASE override as api/client.js.
+const WEATHER_URL = `${import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'}/weather`
 
 /**
  * Fetches live current-conditions data for a district from the backend's

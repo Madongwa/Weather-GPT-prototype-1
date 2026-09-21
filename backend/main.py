@@ -10,6 +10,8 @@ mock data — see each module's own docstring for what's still a stand-in
 (e.g. geofence.py's simplified district polygons) versus fully real.
 """
 
+import os
+
 from dotenv import load_dotenv
 
 # Must run before ask.py's AsyncAnthropic() client is constructed (which
@@ -62,9 +64,16 @@ origins = [
     *(f"http://127.0.0.1:{port}" for port in range(5173, 5178)),
 ]
 
+# The deployed frontend's origin (e.g. https://weather-gpt-....vercel.app)
+# isn't known until that deploy exists, so it comes from an env var rather
+# than being hardcoded here.
+if extra_origin := os.environ.get("FRONTEND_ORIGIN"):
+    origins.append(extra_origin)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app" if os.environ.get("VERCEL") else None,
     allow_methods=["*"],
     allow_headers=["*"],
 )

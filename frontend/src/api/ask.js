@@ -1,5 +1,5 @@
-// Same local dev address pattern as useHealthCheck.js / useWeather.js.
-const ASK_URL = 'http://127.0.0.1:8000/ask'
+// Same VITE_API_BASE override as api/client.js.
+const ASK_URL = `${import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'}/ask`
 
 /**
  * Calls the backend's /ask route — a real Claude call grounded in live

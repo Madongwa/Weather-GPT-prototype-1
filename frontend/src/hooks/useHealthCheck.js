@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-// The FastAPI backend's local dev address (see backend/main.py).
-const HEALTH_URL = 'http://127.0.0.1:8000/health'
+// Same VITE_API_BASE override as api/client.js — see that file's comment.
+const HEALTH_URL = `${import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'}/health`
 
 /**
  * Pings the backend's /health endpoint once when the component using this

@@ -7,11 +7,16 @@ machinery than the problem needs. init_db() creates every table if it
 doesn't already exist; the .db file itself is gitignored.
 """
 
+import os
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "weathergpt.db"
+# On Vercel the deployed function bundle is read-only — only /tmp is
+# writable, and it's ephemeral (wiped between cold starts, not shared
+# across concurrent instances). VERCEL is set automatically by the
+# platform at runtime, so local dev and tests are unaffected.
+DB_PATH = Path("/tmp/weathergpt.db") if os.environ.get("VERCEL") else Path(__file__).parent / "weathergpt.db"
 
 
 @contextmanager

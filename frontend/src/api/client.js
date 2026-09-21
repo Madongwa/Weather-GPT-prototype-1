@@ -1,6 +1,9 @@
 import { getDeviceId } from '../utils/deviceId'
 
-const API_BASE = 'http://127.0.0.1:8000'
+// VITE_API_BASE points at the deployed backend in production (set as a
+// Vercel project env var); falls back to the local FastAPI dev server
+// when unset, which is the case for plain `npm run dev`.
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
 
 /**
  * Shared fetch wrapper for every backend call that needs device
