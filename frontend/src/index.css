@@ -6,28 +6,27 @@
   repeating hex codes. Change a color here and it updates everywhere.
 */
 :root {
-  /* Dark with a subtle green undertone — not a dramatic hue shift, just
-     enough that the background reads as "dark teal-green room" rather
-     than pure navy, to match the teal/green brand below. */
-  --color-bg: #0b1712;
-  --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
+  /* Accent has moved four times now: sky-blue -> a teal that duplicated
+     --color-teal -> violet -> teal -> this blue. Light theme this time
+     (a deliberate reversal of the earlier "dark, not blue" decision —
+     confirmed directly with the user), matching a reference app's blue
+     brand color. --color-teal (below) stays a DIFFERENT hue (green) from
+     accent on purpose, even on a light background — accent is "brand/
+     interactive" (buttons, links, the mic button, focus rings, sidebar
+     active state), --color-teal is reserved for "verified/positive"
+     (Grounded, Online, safe check-ins). They were merged once before and
+     it made that status signal blend into ordinary UI chrome instead of
+     standing out — keep them as two tokens even when both read "cool". */
+  --color-bg: #eef4fc;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
   --color-text-faint: #64748b;
-  --color-card-bg: #131f1a;
-  --color-card-border: #1e2e27;
+  --color-card-bg: #ffffff;
+  --color-card-border: #dbe4f0;
 
-  /* Accent has moved three times now: sky-blue -> a teal that duplicated
-     --color-teal -> violet -> this teal. This time --color-teal (below)
-     is deliberately a DIFFERENT hex (emerald) from this accent, even
-     though both read as "green family" — accent is "brand/interactive"
-     (buttons, links, the mic button, focus rings, sidebar active state),
-     --color-teal is reserved for "verified/positive" (Grounded, Online,
-     safe check-ins). They were merged once before and it made that
-     status signal blend into ordinary UI chrome instead of standing
-     out — keep them as two tokens even when the hues are close. */
-  --color-accent: #14b8a6;
-  --color-accent-hover: #2dd4bf;
-  --color-teal: #34d399;
+  --color-accent: #1a56db;
+  --color-accent-hover: #1e40af;
+  --color-teal: #16a34a;
   --color-amber: #f59e0b;
   --color-red: #f87171;
 

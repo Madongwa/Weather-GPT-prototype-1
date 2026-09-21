@@ -61,7 +61,7 @@
 
 .trust-screen__demo-option--active {
   border-color: var(--color-accent);
-  background: rgba(20, 184, 166, 0.08);
+  background: rgba(26, 86, 219, 0.08);
 }
 
 .trust-screen__demo-label {
@@ -134,7 +134,7 @@
 }
 
 .trust-screen__badge--connected {
-  background: rgba(52, 211, 153, 0.14);
+  background: rgba(22, 163, 74, 0.14);
   color: var(--color-teal);
 }
 
@@ -193,7 +193,7 @@
 }
 
 .trust-screen__how-tag--live {
-  background: rgba(52, 211, 153, 0.14);
+  background: rgba(22, 163, 74, 0.14);
   color: var(--color-teal);
 }
 

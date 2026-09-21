@@ -35,7 +35,7 @@
 @media (hover: hover) {
   .speak-button__circle:hover {
     background: var(--color-accent-hover);
-    box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.15);
+    box-shadow: 0 0 0 8px rgba(26, 86, 219, 0.15);
   }
 }
 

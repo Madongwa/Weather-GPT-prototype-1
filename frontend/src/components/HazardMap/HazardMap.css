@@ -12,12 +12,3 @@
   overflow: hidden;
   border: 1px solid var(--color-card-border);
 }
-
-/* Leaflet's default UI chrome is styled for a light basemap — nudge the
-   attribution strip so it doesn't glare against the app's dark theme.
-   (Plain global CSS here, not CSS Modules, so no :global() needed —
-   this file is loaded app-wide like every other component stylesheet.) */
-.hazard-map .leaflet-control-attribution {
-  background: rgba(11, 18, 32, 0.75);
-  color: var(--color-text-muted);
-}
