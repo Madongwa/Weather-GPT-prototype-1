@@ -59,6 +59,15 @@
   text-align: center;
 }
 
+/* Typing a question here submits the same way tapping the mic does, and
+   the answer above (AnswerCard) updates in place — the whole ask
+   interaction lives in one card so a response is never scrolled miles
+   away from the input a visitor is actually looking at. */
+.home-screen__hero .ask-input-bar {
+  width: 100%;
+  max-width: 420px;
+}
+
 /* Capped width + centered (rather than a large fixed gap) so the four
    actions stay a cohesive group instead of stretching into four
    separated "islands" on a wide desktop row — but still shrinks to fit

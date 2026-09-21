@@ -128,6 +128,7 @@ function HomeScreen() {
         <p className="home-screen__hero-subtitle">{t('ask.heading')}</p>
         <SpeakButton onResult={handleAsk} />
         <AnswerCard />
+        <AskInputBar onSubmit={handleAsk} />
       </section>
 
       <AlertPreviewBanner district={district} />
@@ -213,8 +214,6 @@ function HomeScreen() {
           </p>
         )}
       </div>
-
-      <AskInputBar onSubmit={handleAsk} />
     </div>
   )
 }
