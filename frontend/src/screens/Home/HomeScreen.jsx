@@ -12,6 +12,7 @@ import { whatsAppShareUrl } from '../../utils/share'
 import { SAMPLE_WEATHER } from '../../data/sampleWeather'
 import SpeakButton from '../../components/SpeakButton/SpeakButton'
 import AskInputBar from '../../components/AskInputBar/AskInputBar'
+import AnswerCard from '../../components/AnswerCard/AnswerCard'
 import AlertPreviewBanner from '../../components/AlertPreviewBanner/AlertPreviewBanner'
 import HomeHeader from './HomeHeader'
 import WeatherSnapshotCard from './WeatherSnapshotCard'
@@ -126,6 +127,7 @@ function HomeScreen() {
       <section className="home-screen__hero">
         <p className="home-screen__hero-subtitle">{t('ask.heading')}</p>
         <SpeakButton onResult={handleAsk} />
+        <AnswerCard />
       </section>
 
       <AlertPreviewBanner district={district} />
