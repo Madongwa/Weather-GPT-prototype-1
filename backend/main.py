@@ -4,7 +4,11 @@ WeatherGPT backend — FastAPI app.
 /health is a liveness check the frontend polls to drive the connectivity
 dot. /weather and /ask are the two real (non-mock) data routes — Open-
 Meteo, and a Groq LLM call grounded in that same weather data plus a
-live Tavily web search (see ask.py / search.py). Everything else
+live Tavily web search (see ask.py / search.py). /ask's answer also
+passes through a lightweight rule-based validator before it's returned
+(see ask.py's _validate_answer) — a regex check for alert-level claims
+that don't actually appear in the grounding data, not a second LLM call.
+Everything else
 (alerts, sos, reports, notifications, checkins, geofence, status,
 admin) is real, persisted (SQLite via db.py) app functionality, not
 mock data — see each module's own docstring for what's still a stand-in

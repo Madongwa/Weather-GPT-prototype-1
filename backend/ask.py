@@ -16,11 +16,15 @@ Claude. `MODEL` below is a reasoning model (gpt-oss-120b);
 answer instead of spending its token budget on visible chain-of-thought.
 """
 
+import logging
 import os
+import re
 
 import httpx
 
 from search import SearchUnavailableError, search_weather_advisories
+
+logger = logging.getLogger(__name__)
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 MODEL = "openai/gpt-oss-120b"
@@ -49,6 +53,46 @@ instruction, and to follow IMD/government warnings first."""
 
 class AskUnavailableError(Exception):
     """Raised when the phrasing LLM call itself fails."""
+
+
+# Terms that imply a specific official alert level — the kind of claim
+# that's easy for an LLM to hallucinate (e.g. inventing "red alert" as a
+# dramatic flourish) but dangerous to get wrong. Deliberately narrow: this
+# isn't trying to catch every possible inaccuracy, just this one specific,
+# checkable failure mode.
+SEVERITY_TERMS = re.compile(
+    r"\b(red alert|orange alert|yellow alert|green alert|"
+    r"red warning|orange warning|yellow warning|"
+    r"extremely severe cyclonic storm|very severe cyclonic storm|severe cyclonic storm)\b",
+    re.IGNORECASE,
+)
+
+
+def _validate_answer(answer: str, grounding_text: str) -> str:
+    """
+    Rule-based check, not a second LLM call — regex against the same
+    text already in hand, so it adds no latency or cost. If the answer
+    names a specific alert level (see SEVERITY_TERMS) that doesn't
+    appear anywhere in the data the model was actually given, that's a
+    plausible hallucination rather than a grounded claim, so a caveat is
+    appended rather than silently trusting it. Logs instead of raising —
+    a false positive here should degrade to "slightly over-cautious
+    answer," never a broken response.
+    """
+    mentioned = {m.group(0).lower() for m in SEVERITY_TERMS.finditer(answer)}
+    if not mentioned:
+        return answer
+
+    grounding_lower = grounding_text.lower()
+    unsupported = {term for term in mentioned if term not in grounding_lower}
+    if not unsupported:
+        return answer
+
+    logger.warning("ask: answer mentioned unsupported severity terms %s", sorted(unsupported))
+    return (
+        f"{answer}\n\n(Note: this mentions an alert level not found in the current data — "
+        "verify with IMD directly before acting on it.)"
+    )
 
 
 def _format_advisories(advisories: list[dict]) -> str:
@@ -115,4 +159,5 @@ async def answer_question(
         raise AskUnavailableError(str(exc)) from exc
 
     answer = data["choices"][0]["message"]["content"]
+    answer = _validate_answer(answer, f"{conditions_text}\n{_format_advisories(advisories)}")
     return answer, advisories

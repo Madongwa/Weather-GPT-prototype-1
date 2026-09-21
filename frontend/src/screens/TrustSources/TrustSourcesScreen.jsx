@@ -165,6 +165,11 @@ function TrustSourcesScreen() {
             tag="LIVE"
             note="Open-Meteo and a live Tavily web search (biased toward IMD/NDMA) both feed the same answer now — a real second source exists. Still simple, though: both get handed to the LLM together rather than being algorithmically reconciled if they disagree."
           />
+          <HowRow
+            label="Response validator on LLM answers"
+            tag="LIVE"
+            note="A rule-based check (not a second LLM call) scans each answer for a claimed alert level (e.g. 'red alert') that doesn't appear anywhere in the weather/advisory data it was given, and appends a caveat when it finds one — catches one specific hallucination pattern, not a general fact-checker."
+          />
         </ul>
       </section>
 
