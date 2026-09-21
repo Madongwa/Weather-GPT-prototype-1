@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next'
+import { useAppSettings } from '../../context/AppSettingsContext'
+import { SPEECH_LOCALES } from '../../constants/languages'
 import { isSpeechSynthesisSupported, speak } from '../../utils/speech'
 import './ListenButton.css'
 
@@ -10,6 +12,7 @@ import './ListenButton.css'
  */
 function ListenButton({ text }) {
   const { t } = useTranslation()
+  const { language } = useAppSettings()
   if (!isSpeechSynthesisSupported) return null
 
   return (
@@ -17,7 +20,7 @@ function ListenButton({ text }) {
       type="button"
       className="listen-button"
       aria-label={t('common.listen')}
-      onClick={() => speak(text)}
+      onClick={() => speak(text, SPEECH_LOCALES[language])}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path

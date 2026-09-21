@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 import { useAppSettings } from './AppSettingsContext'
+import { SPEECH_LOCALES } from '../constants/languages'
 import { askQuestion } from '../api/ask'
 import { speak } from '../utils/speech'
 import { SAMPLE_CONVERSATION } from '../data/sampleConversation'
@@ -20,7 +21,7 @@ import { SAMPLE_CONVERSATION } from '../data/sampleConversation'
 const AskContext = createContext(null)
 
 export function AskProvider({ children }) {
-  const { district, role, demoMode } = useAppSettings()
+  const { district, role, demoMode, language } = useAppSettings()
   const [conversation, setConversation] = useState(SAMPLE_CONVERSATION)
   const [hearAloud, setHearAloud] = useState(false)
 
@@ -31,7 +32,7 @@ export function AskProvider({ children }) {
     setConversation((prev) => prev.map((turn) => (turn.id === id ? { ...turn, ...changes } : turn)))
     // Only speak once the real (or sample) answer lands — not the
     // "Thinking…" placeholder.
-    if (hearAloud && changes.answer) speak(changes.answer)
+    if (hearAloud && changes.answer) speak(changes.answer, SPEECH_LOCALES[language])
   }
 
   const handleAsk = async (question) => {

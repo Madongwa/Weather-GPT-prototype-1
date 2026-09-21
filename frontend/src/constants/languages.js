@@ -16,3 +16,16 @@ export const LANGUAGE_CODES = {
   Hindi: 'hi',
   Urdu: 'ur',
 }
+
+// BCP-47 locale tags for the device's native speech recognizer/synthesizer
+// (see utils/speech.js) — a different mapping from LANGUAGE_CODES above,
+// since those are Android/Web Speech locale tags, not i18next's codes.
+// Every SpeakButton/ListenButton call site must pass one of these rather
+// than assuming English — the recognizer and synthesizer both silently
+// default to en-IN otherwise, regardless of the selected app language.
+export const SPEECH_LOCALES = {
+  English: 'en-IN',
+  Telugu: 'te-IN',
+  Hindi: 'hi-IN',
+  Urdu: 'ur-IN',
+}

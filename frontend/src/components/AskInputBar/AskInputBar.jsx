@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useAppSettings } from '../../context/AppSettingsContext'
+import { SPEECH_LOCALES } from '../../constants/languages'
 import { listenOnce } from '../../utils/speech'
 import './AskInputBar.css'
 
@@ -33,6 +35,7 @@ import './AskInputBar.css'
  */
 function AskInputBar({ value, onValueChange, onSubmit }) {
   const { t } = useTranslation()
+  const { language } = useAppSettings()
   const [internalMessage, setInternalMessage] = useState('')
   const [listening, setListening] = useState(false)
   const [micError, setMicError] = useState('')
@@ -53,7 +56,7 @@ function AskInputBar({ value, onValueChange, onSubmit }) {
     setListening(true)
     setMicError('')
     try {
-      const transcript = await listenOnce()
+      const transcript = await listenOnce({ lang: SPEECH_LOCALES[language] })
       onSubmit?.(transcript)
     } catch (error) {
       // Device doesn't support it, permission denied, or no speech

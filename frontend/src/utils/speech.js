@@ -65,9 +65,17 @@ export async function listenOnce({ lang = 'en-IN' } = {}) {
   return matches[0]
 }
 
-/** Speaks `text` aloud. Silently does nothing if unsupported or empty. */
-export function speak(text) {
+/**
+ * Speaks `text` aloud. Silently does nothing if unsupported or empty.
+ * `lang` (a BCP-47 tag like the SPEECH_LOCALES map in constants/languages.js)
+ * picks which voice/pronunciation the engine uses — left unset, the
+ * utterance falls back to the device's default voice regardless of the
+ * app's selected language, which is wrong for non-English text.
+ */
+export function speak(text, lang) {
   if (!isSpeechSynthesisSupported || !text) return
   window.speechSynthesis.cancel() // don't let utterances stack/overlap
-  window.speechSynthesis.speak(new SpeechSynthesisUtterance(text))
+  const utterance = new SpeechSynthesisUtterance(text)
+  if (lang) utterance.lang = lang
+  window.speechSynthesis.speak(utterance)
 }

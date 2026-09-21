@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useAppSettings } from '../../context/AppSettingsContext'
+import { SPEECH_LOCALES } from '../../constants/languages'
 import { listenOnce } from '../../utils/speech'
 import './SpeakButton.css'
 
@@ -22,6 +24,7 @@ import './SpeakButton.css'
  * `onResult(transcript)` is called with the recognized text.
  */
 function SpeakButton({ onResult }) {
+  const { language } = useAppSettings()
   const [listening, setListening] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -31,7 +34,7 @@ function SpeakButton({ onResult }) {
     setListening(true)
     setErrorMessage('')
     try {
-      const transcript = await listenOnce()
+      const transcript = await listenOnce({ lang: SPEECH_LOCALES[language] })
       onResult?.(transcript)
     } catch (error) {
       setErrorMessage(error.message || 'Could not start listening — try typing instead.')
