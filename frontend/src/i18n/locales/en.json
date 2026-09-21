@@ -1,0 +1,113 @@
+{
+  "common": {
+    "offline": "Offline",
+    "listen": "Listen",
+    "share": "Share",
+    "viewDetails": "View details",
+    "askAboutThis": "Ask about this",
+    "cancel": "Cancel",
+    "submit": "Submit"
+  },
+  "nav": {
+    "home": "Home",
+    "ask": "Ask",
+    "forecast": "Forecast",
+    "myAdvice": "My Advice",
+    "alerts": "Alerts & Field Reports",
+    "sos": "SOS",
+    "communityReports": "Community Reports",
+    "notifications": "Notifications",
+    "yourRole": "Your Role",
+    "history": "History",
+    "trustSources": "Trust & Sources",
+    "settings": "Settings",
+    "about": "About",
+    "groupSafety": "Safety",
+    "groupYou": "You",
+    "groupMore": "More"
+  },
+  "demoBanner": {
+    "text": "Demo data — not an official warning."
+  },
+  "home": {
+    "useMyLocation": "Use my location",
+    "locating": "Locating…",
+    "checkIn": "Check in",
+    "imSafe": "I'm safe",
+    "needHelp": "I need help",
+    "quickLinkAsk": "Ask",
+    "quickLinkAlerts": "Alerts",
+    "quickLinkAdvice": "My Advice"
+  },
+  "myAdvice": {
+    "title": "My Advice",
+    "disclaimer": "Decision support, not an official instruction — always follow IMD and government warnings first.",
+    "forRole": "For",
+    "noGuidance": "No specific guidance right now."
+  },
+  "yourRole": {
+    "title": "Your Role",
+    "note": "Choosing a role re-tunes My Advice's guidance steps to what actually matters for you — a farmer's harvest decision isn't a driver's road-safety question."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "Nothing here yet.",
+    "acknowledge": "Acknowledge"
+  },
+  "trustSources": {
+    "title": "Trust & Sources",
+    "demoModeTitle": "Demo Mode",
+    "dataSourcesTitle": "Data sources",
+    "recheck": "Re-check",
+    "howThisWorksTitle": "How this works",
+    "scenarioSimulatorsTitle": "Scenario simulators"
+  },
+  "alerts": {
+    "title": "Alerts & Field Reports",
+    "sendSos": "Send SOS",
+    "officialAlerts": "Official Alerts",
+    "viewCommunityReports": "Community reports",
+    "noAlerts": "No active alerts right now."
+  },
+  "sos": {
+    "title": "Send SOS",
+    "peopleWithYou": "People with you",
+    "medicalHelpNeeded": "Medical help needed",
+    "additionalDetail": "Additional detail (optional)",
+    "tapAgainToSend": "Tap again to send",
+    "offlineNote": "Works without network — will send automatically when connection returns.",
+    "yourSentMessages": "Your sent SOS messages",
+    "nothingSentYet": "Nothing sent yet."
+  },
+  "communityReports": {
+    "title": "Community Reports",
+    "note": "Crowdsourced reports from people nearby — flooding, damage, waterlogging. Unverified, and kept visually distinct from official Alerts.",
+    "reportSomething": "Report something",
+    "noReports": "No community reports yet."
+  },
+  "forecast": {
+    "title": "Forecast"
+  },
+  "history": {
+    "title": "History"
+  },
+  "settings": {
+    "title": "Settings",
+    "languageTitle": "Language",
+    "unitsTitle": "Units",
+    "notificationsTitle": "Notification preferences"
+  },
+  "about": {
+    "title": "About"
+  },
+  "ask": {
+    "heading": "Ask me anything about today's weather",
+    "hearAnswersAloud": "Hear answers aloud",
+    "typeYourMessage": "Type your message",
+    "quickListen": "Listen",
+    "quickForecast": "Forecast",
+    "quickAdvice": "Advice",
+    "quickSettings": "Settings"
+  }
+}

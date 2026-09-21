@@ -1,0 +1,54 @@
+.your-role-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.your-role-screen__title {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.your-role-screen__note {
+  margin: 0 0 16px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.your-role-screen__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 900px) {
+  .your-role-screen__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.your-role-screen__card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 14px;
+  padding: 16px 12px;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .your-role-screen__card:hover {
+    border-color: var(--color-accent);
+  }
+}
+
+.your-role-screen__card--active {
+  border-color: var(--color-accent);
+  background: rgba(20, 184, 166, 0.08);
+  color: var(--color-accent);
+  font-weight: 600;
+}

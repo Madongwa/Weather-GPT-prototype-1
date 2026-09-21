@@ -1,0 +1,113 @@
+{
+  "common": {
+    "offline": "ऑफ़लाइन",
+    "listen": "सुनें",
+    "share": "साझा करें",
+    "viewDetails": "विवरण देखें",
+    "askAboutThis": "इसके बारे में पूछें",
+    "cancel": "रद्द करें",
+    "submit": "जमा करें"
+  },
+  "nav": {
+    "home": "होम",
+    "ask": "पूछें",
+    "forecast": "पूर्वानुमान",
+    "myAdvice": "मेरी सलाह",
+    "alerts": "चेतावनियाँ और रिपोर्ट",
+    "sos": "SOS",
+    "communityReports": "सामुदायिक रिपोर्ट",
+    "notifications": "सूचनाएं",
+    "yourRole": "आपकी भूमिका",
+    "history": "इतिहास",
+    "trustSources": "विश्वास और स्रोत",
+    "settings": "सेटिंग्स",
+    "about": "ऐप के बारे में",
+    "groupSafety": "सुरक्षा",
+    "groupYou": "आप",
+    "groupMore": "अधिक"
+  },
+  "demoBanner": {
+    "text": "डेमो डेटा — यह कोई आधिकारिक चेतावनी नहीं है।"
+  },
+  "home": {
+    "useMyLocation": "मेरा स्थान उपयोग करें",
+    "locating": "स्थान खोजा जा रहा है…",
+    "checkIn": "चेक इन करें",
+    "imSafe": "मैं सुरक्षित हूँ",
+    "needHelp": "मुझे मदद चाहिए",
+    "quickLinkAsk": "पूछें",
+    "quickLinkAlerts": "चेतावनियाँ",
+    "quickLinkAdvice": "मेरी सलाह"
+  },
+  "myAdvice": {
+    "title": "मेरी सलाह",
+    "disclaimer": "यह केवल निर्णय सहायता है, आधिकारिक निर्देश नहीं — हमेशा पहले IMD और सरकारी चेतावनियों का पालन करें।",
+    "forRole": "के लिए",
+    "noGuidance": "अभी कोई विशेष सलाह नहीं है।"
+  },
+  "yourRole": {
+    "title": "आपकी भूमिका",
+    "note": "भूमिका चुनने से मेरी सलाह आपके लिए वास्तव में महत्वपूर्ण बातों के अनुसार ढल जाती है।"
+  },
+  "notifications": {
+    "title": "सूचनाएं",
+    "markAllRead": "सभी को पढ़ा हुआ चिह्नित करें",
+    "empty": "यहाँ अभी कुछ नहीं है।",
+    "acknowledge": "स्वीकार करें"
+  },
+  "trustSources": {
+    "title": "विश्वास और स्रोत",
+    "demoModeTitle": "डेमो मोड",
+    "dataSourcesTitle": "डेटा स्रोत",
+    "recheck": "फिर से जांचें",
+    "howThisWorksTitle": "यह कैसे काम करता है",
+    "scenarioSimulatorsTitle": "परिदृश्य सिम्युलेटर"
+  },
+  "alerts": {
+    "title": "चेतावनियाँ और रिपोर्ट",
+    "sendSos": "SOS भेजें",
+    "officialAlerts": "आधिकारिक चेतावनियाँ",
+    "viewCommunityReports": "सामुदायिक रिपोर्ट",
+    "noAlerts": "अभी कोई सक्रिय चेतावनी नहीं है।"
+  },
+  "sos": {
+    "title": "SOS भेजें",
+    "peopleWithYou": "आपके साथ लोग",
+    "medicalHelpNeeded": "चिकित्सा सहायता चाहिए",
+    "additionalDetail": "अतिरिक्त विवरण (वैकल्पिक)",
+    "tapAgainToSend": "भेजने के लिए फिर से टैप करें",
+    "offlineNote": "बिना नेटवर्क के काम करता है — कनेक्शन वापस आने पर अपने आप भेज देगा।",
+    "yourSentMessages": "आपके भेजे गए SOS संदेश",
+    "nothingSentYet": "अभी तक कुछ नहीं भेजा गया।"
+  },
+  "communityReports": {
+    "title": "सामुदायिक रिपोर्ट",
+    "note": "आस-पास के लोगों की रिपोर्ट — बाढ़, नुकसान, जलभराव। असत्यापित, और आधिकारिक चेतावनियों से अलग दिखाई जाती हैं।",
+    "reportSomething": "कुछ रिपोर्ट करें",
+    "noReports": "अभी तक कोई सामुदायिक रिपोर्ट नहीं है।"
+  },
+  "forecast": {
+    "title": "पूर्वानुमान"
+  },
+  "history": {
+    "title": "इतिहास"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "languageTitle": "भाषा",
+    "unitsTitle": "इकाइयाँ",
+    "notificationsTitle": "सूचना प्राथमिकताएं"
+  },
+  "about": {
+    "title": "ऐप के बारे में"
+  },
+  "ask": {
+    "heading": "आज के मौसम के बारे में कुछ भी पूछें",
+    "hearAnswersAloud": "जवाब सुनें",
+    "typeYourMessage": "अपना संदेश टाइप करें",
+    "quickListen": "सुनें",
+    "quickForecast": "पूर्वानुमान",
+    "quickAdvice": "सलाह",
+    "quickSettings": "सेटिंग्स"
+  }
+}

@@ -1,0 +1,114 @@
+.home-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.home-header__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.home-header__logo {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-header__name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Shared by the role pill, the language pill, and the district/location
+   button — a positioning context for whichever PickerPopover is open. */
+.home-header__pill-wrap {
+  position: relative;
+}
+
+.home-header__location {
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .home-header__location:hover {
+    color: var(--color-accent);
+  }
+}
+
+.home-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.home-header__online-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-amber);
+  border-radius: 999px;
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.78rem;
+}
+
+.home-header__online-pill--online {
+  color: var(--color-teal);
+}
+
+.home-header__role-pill,
+.home-header__language-pill {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .home-header__role-pill:hover,
+  .home-header__language-pill:hover {
+    border-color: var(--color-accent);
+  }
+}
+
+.home-header__settings {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) {
+  .home-header__settings:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+}

@@ -1,0 +1,40 @@
+.status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+
+.status-strip__pill-wrap {
+  position: relative;
+}
+
+.status-strip__pill {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (hover: hover) {
+  .status-strip__pill:hover {
+    border-color: var(--color-accent);
+  }
+}
+
+/* Desktop (see src/styles/breakpoints.js): there's room for the full
+   label on every pill. */
+@media (min-width: 900px) {
+  .status-strip__pill {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    max-width: none;
+  }
+}

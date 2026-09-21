@@ -1,0 +1,112 @@
+.notifications-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 0;
+}
+
+.notifications-screen__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.notifications-screen__title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.notifications-screen__mark-all {
+  background: none;
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text-muted);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.notifications-screen__empty {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.notifications-screen__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notifications-screen__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-left: 4px solid var(--color-card-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.notifications-screen__item--read {
+  opacity: 0.6;
+}
+
+.notifications-screen__item--safe {
+  border-left-color: var(--color-teal);
+}
+
+.notifications-screen__item--warning {
+  border-left-color: var(--color-amber);
+}
+
+.notifications-screen__item--danger {
+  border-left-color: var(--color-red);
+}
+
+.notifications-screen__item-body {
+  flex: 1;
+}
+
+.notifications-screen__item-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.notifications-screen__item-text {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.notifications-screen__item-time {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.notifications-screen__item-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.notifications-screen__ack {
+  background: none;
+  border: 1px solid var(--color-card-border);
+  color: var(--color-accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
+}

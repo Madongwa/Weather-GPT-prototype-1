@@ -1,0 +1,66 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header__menu-btn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .header__menu-btn:hover {
+    background: var(--color-card-bg);
+  }
+}
+
+.header__wordmark {
+  display: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-accent);
+}
+
+/* Desktop (see src/styles/breakpoints.js): sidebar is always pinned
+   open, so the hamburger has nothing to do — swap it for the wordmark. */
+@media (min-width: 900px) {
+  .header__menu-btn {
+    display: none;
+  }
+
+  .header__wordmark {
+    display: inline-block;
+  }
+}
+
+.header__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.header__dot--online {
+  background: var(--color-teal);
+}
+
+.header__dot--offline {
+  background: var(--color-amber);
+}
+
+.header__status-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}

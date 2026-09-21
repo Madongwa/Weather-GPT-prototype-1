@@ -1,0 +1,98 @@
+.my-advice-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.my-advice-screen__title {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.my-advice-screen__disclaimer {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-amber);
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-amber);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.my-advice-screen__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.my-advice-screen__empty {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.my-advice-screen__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.my-advice-screen__step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  align-items: start;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.my-advice-screen__step-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(20, 184, 166, 0.15);
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-advice-screen__step-text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.my-advice-screen__step-actions {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.my-advice-screen__ask-button {
+  background: none;
+  border: 1px solid var(--color-card-border);
+  color: var(--color-accent);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .my-advice-screen__ask-button:hover {
+    border-color: var(--color-accent);
+  }
+}

@@ -1,0 +1,38 @@
+.chat-turn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-turn__question {
+  align-self: flex-end;
+  max-width: 85%;
+  margin: 0;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-radius: 14px 14px 4px 14px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.chat-turn__answer {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 4px 14px 14px 14px;
+  padding: 12px 14px;
+}
+
+.chat-turn__answer-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.chat-turn__answer-text {
+  margin: 0;
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}

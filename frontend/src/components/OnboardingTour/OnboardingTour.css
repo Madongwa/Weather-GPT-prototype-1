@@ -1,0 +1,62 @@
+.onboarding-tour {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  padding: 20px;
+}
+
+.onboarding-tour__card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+}
+
+.onboarding-tour__step-count {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.onboarding-tour__title {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  color: var(--color-accent);
+}
+
+.onboarding-tour__body {
+  margin: 0 0 20px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.onboarding-tour__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.onboarding-tour__skip {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.onboarding-tour__next {
+  background: var(--color-accent);
+  border: none;
+  color: var(--color-bg);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -1,0 +1,42 @@
+.shell {
+  min-height: 100vh;
+}
+
+.shell__content {
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 20px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Desktop (see src/styles/breakpoints.js): Sidebar.css pins the drawer
+   open at --sidebar-width, so pad the shell by that much on the left —
+   then `.shell__content`'s own max-width + auto margins center it in
+   whatever's left, instead of stretching the content edge-to-edge on a
+   wide monitor. */
+@media (min-width: 900px) {
+  .shell {
+    padding-left: var(--sidebar-width);
+  }
+
+  .shell__content {
+    max-width: var(--content-max-width);
+    padding: 32px 40px 40px;
+  }
+}
+
+/* Wide desktop: a little more breathing room. */
+@media (min-width: 1280px) {
+  .shell__content {
+    max-width: var(--content-max-width-wide);
+    padding: 40px 56px 48px;
+  }
+}

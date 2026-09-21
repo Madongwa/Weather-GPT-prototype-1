@@ -1,0 +1,54 @@
+.next-hours {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+}
+
+.next-hours__empty {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.next-hours__card {
+  flex: 0 0 auto;
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 14px;
+  padding: var(--space-3) var(--space-2);
+  color: var(--color-accent);
+}
+
+.next-hours__time {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
+.next-hours__temp {
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.next-hours__rain {
+  color: var(--color-text-faint);
+  font-size: 0.68rem;
+}
+
+/* Wide desktop: enough room to show every hour card without scrolling —
+   wrap and stretch to fill instead. */
+@media (min-width: 1000px) {
+  .next-hours {
+    overflow-x: visible;
+    flex-wrap: wrap;
+  }
+
+  .next-hours__card {
+    flex: 1 1 68px;
+  }
+}

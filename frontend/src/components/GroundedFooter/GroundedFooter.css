@@ -1,0 +1,38 @@
+.grounded-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.grounded-footer__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.grounded-footer__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.grounded-footer__status--grounded .grounded-footer__dot {
+  background: var(--color-teal);
+}
+
+.grounded-footer__status--unverified .grounded-footer__dot {
+  background: var(--color-amber);
+}
+
+.grounded-footer__source {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

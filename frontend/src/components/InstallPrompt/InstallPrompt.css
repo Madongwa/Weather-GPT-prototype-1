@@ -1,0 +1,52 @@
+.install-prompt {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 80;
+}
+
+.install-prompt__text {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+}
+
+.install-prompt__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.install-prompt__install {
+  background: var(--color-accent);
+  border: none;
+  color: var(--color-bg);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.install-prompt__dismiss {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+@media (min-width: 900px) {
+  .install-prompt {
+    left: auto;
+    right: 24px;
+    bottom: 24px;
+    margin: 0;
+  }
+}

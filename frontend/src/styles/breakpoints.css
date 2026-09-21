@@ -1,0 +1,33 @@
+/*
+ * Canonical breakpoints for this app (JS mirror: breakpoints.js).
+ *
+ *   tablet:  >= 600px
+ *   desktop: >= 900px   -- sidebar pins open, two-pane layouts, etc.
+ *   wide:    >= 1280px  -- extra content width
+ *
+ * Below 600px is "mobile", the implicit default with no query needed.
+ *
+ * Every `@media (min-width: ...)` rule in this app should use exactly
+ * one of these three numbers and nothing else. That's "shared" in the
+ * sense of "everyone agrees on the same numbers", not literal DRY —
+ * `var()` custom properties cannot appear inside a media feature, so
+ * the pixel value itself still has to be repeated at each call site.
+ *
+ * Separately: a width breakpoint answers "how much screen space is
+ * there?" — a layout question. It's a different question from "can
+ * this device actually hover a pointer over something?", which is what
+ * `@media (hover: hover)` answers. A narrow desktop browser window has
+ * a mouse but little width; a large tablet in landscape has lots of
+ * width but no real hover. This file only standardizes the width
+ * breakpoints — hover-gated interaction styles (see component CSS
+ * files) intentionally don't key off these numbers at all.
+ */
+
+:root {
+  /* Usable in ordinary property values (max-width, padding, ...) —
+     unlike the breakpoints above, these ARE real CSS custom properties
+     because they never need to appear inside a media condition. */
+  --content-max-width: 1100px;
+  --content-max-width-wide: 1320px;
+  --sidebar-width: 260px;
+}

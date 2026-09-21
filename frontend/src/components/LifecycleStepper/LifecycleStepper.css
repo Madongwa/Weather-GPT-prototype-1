@@ -1,0 +1,63 @@
+.lifecycle-stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.lifecycle-stepper__stage {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+}
+
+.lifecycle-stepper__stage:not(:last-child)::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: var(--color-card-border);
+  margin: 0 6px;
+}
+
+.lifecycle-stepper__stage--done:not(:last-child)::after {
+  background: var(--color-accent);
+}
+
+.lifecycle-stepper__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-card-border);
+  flex-shrink: 0;
+}
+
+.lifecycle-stepper__stage--done .lifecycle-stepper__dot {
+  background: var(--color-accent);
+}
+
+.lifecycle-stepper__label {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.lifecycle-stepper__stage--current .lifecycle-stepper__label {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.lifecycle-stepper--small .lifecycle-stepper__label {
+  display: none;
+}
+
+.lifecycle-stepper--large .lifecycle-stepper__dot {
+  width: 14px;
+  height: 14px;
+}
+
+.lifecycle-stepper--large .lifecycle-stepper__label {
+  font-size: 0.78rem;
+}

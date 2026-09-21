@@ -1,0 +1,191 @@
+.sos-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 0;
+}
+
+.sos-screen__title {
+  margin: 0;
+  color: var(--color-red);
+  font-size: 1.2rem;
+}
+
+.sos-screen__quick-needs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 900px) {
+  .sos-screen__quick-needs {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.sos-screen__need {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text);
+  border-radius: 12px;
+  padding: 12px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.sos-screen__need--selected {
+  border-color: var(--color-red);
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--color-red);
+  font-weight: 600;
+}
+
+.sos-screen__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.sos-screen__stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sos-screen__stepper button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-card-border);
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.sos-screen__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.sos-screen__detail {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 12px;
+  color: var(--color-text);
+  padding: 10px 12px;
+  min-height: 70px;
+  font-size: 0.88rem;
+  resize: vertical;
+}
+
+.sos-screen__send {
+  background: var(--color-red);
+  border: none;
+  color: white;
+  border-radius: 999px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sos-screen__send--armed {
+  background: var(--color-amber);
+  animation: sos-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes sos-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.sos-screen__error {
+  margin: 0;
+  color: var(--color-red);
+  font-size: 0.82rem;
+}
+
+.sos-screen__offline-note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.sos-screen__hop-path {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.4rem;
+}
+
+.sos-screen__hop-line {
+  flex: 1;
+  max-width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-card-border), var(--color-accent), var(--color-card-border));
+  background-size: 200% 100%;
+  animation: sos-hop 1.6s linear infinite;
+}
+
+@keyframes sos-hop {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.sos-screen__hop-caption {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+
+.sos-screen__log-title {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}
+
+.sos-screen__empty {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.sos-screen__log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sos-screen__log-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
+.sos-screen__log-status {
+  color: var(--color-teal);
+  font-weight: 600;
+}

@@ -1,0 +1,82 @@
+.ask-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Sparkle sits inside the pill — this wrapper is what makes that
+   possible: input gets left padding to clear the icon, icon is
+   absolutely positioned within this relative container. */
+.ask-input-bar__field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.ask-input-bar__sparkle {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-accent);
+  display: flex;
+  pointer-events: none;
+}
+
+.ask-input-bar__input {
+  width: 100%;
+  height: 44px;
+  border-radius: 22px;
+  border: 1px solid var(--color-card-border);
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  padding: 0 18px 0 38px;
+  font-size: 0.95rem;
+}
+
+.ask-input-bar__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.ask-input-bar__input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+@media (hover: hover) {
+  .ask-input-bar__input:hover {
+    border-color: var(--color-accent);
+  }
+
+  .ask-input-bar__mic:hover {
+    background: var(--color-accent-hover);
+  }
+}
+
+.ask-input-bar__mic {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ask-input-bar__mic--listening {
+  animation: ask-input-bar-mic-pulse 1s ease-in-out infinite;
+}
+
+@keyframes ask-input-bar-mic-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

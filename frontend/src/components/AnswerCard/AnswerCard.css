@@ -1,0 +1,20 @@
+.answer-card {
+  width: 100%;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+
+/* DemoTag's own CSS handles its look — this is just AnswerCard's
+   layout opinion about the gap before the text below it. */
+.answer-card .demo-tag {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.answer-card__text {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}

@@ -1,0 +1,103 @@
+.speak-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.speak-button__circle {
+  position: relative;
+  width: 196px;
+  height: 196px;
+  /* Plain circle — the original mockup used an organic "blob" shape
+     here, but a single component now renders this in more than one
+     context (Home's hero card, Ask), so it's standardized to the
+     simplest shape rather than carrying the blob's four-cornered
+     border-radius everywhere it's reused. */
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: none;
+  color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.speak-button__circle:active {
+  transform: scale(0.97);
+}
+
+/* Hover-capability gated, not width-gated (see breakpoints.css) — a
+   mouse can hover regardless of window size, and a touch tap on this
+   button shouldn't leave a hover glow stuck on afterwards. */
+@media (hover: hover) {
+  .speak-button__circle:hover {
+    background: var(--color-accent-hover);
+    box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.15);
+  }
+}
+
+.speak-button__icon {
+  position: relative;
+  /* Sits above the ring, which is also inside this button. */
+  z-index: 1;
+}
+
+/* Desktop (see src/styles/breakpoints.js): a bit more presence and
+   breathing room now that it's not fighting a 390px mobile viewport. */
+@media (min-width: 900px) {
+  .speak-button {
+    gap: 20px;
+  }
+
+  .speak-button__circle {
+    width: 240px;
+    height: 240px;
+  }
+
+  .speak-button__icon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* The pulsing ring: a circle outline, absolutely positioned to overlay
+   the button, that grows and fades on a loop. Only `transform` and
+   `opacity` are animated (never width/height/border-radius) because
+   those two properties are cheap for the browser to animate — no
+   layout recalculation, just compositing. */
+.speak-button__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  animation: speak-button-pulse-ring 1.6s ease-out infinite;
+}
+
+@keyframes speak-button-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Respect the user's OS-level "reduce motion" accessibility setting by
+   turning the animation off entirely rather than just slowing it down. */
+@media (prefers-reduced-motion: reduce) {
+  .speak-button__ring {
+    animation: none;
+    display: none;
+  }
+}
+
+.speak-button__label {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}

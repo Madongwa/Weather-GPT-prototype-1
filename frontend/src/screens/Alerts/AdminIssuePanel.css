@@ -1,0 +1,50 @@
+.admin-issue-panel {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-issue-panel__title {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.admin-issue-panel input,
+.admin-issue-panel select,
+.admin-issue-panel textarea {
+  background: var(--color-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+
+.admin-issue-panel textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.admin-issue-panel__submit {
+  align-self: flex-start;
+  background: var(--color-accent);
+  border: none;
+  color: var(--color-bg);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-issue-panel__error {
+  margin: 0;
+  color: var(--color-red);
+  font-size: 0.78rem;
+}

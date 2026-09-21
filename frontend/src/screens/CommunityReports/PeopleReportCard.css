@@ -1,0 +1,35 @@
+.people-report-card {
+  background: var(--color-bg);
+  border: 1px dashed var(--color-amber);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.people-report-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.people-report-card__type {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-amber);
+}
+
+.people-report-card__time {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.people-report-card__location,
+.people-report-card__description {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-text);
+  line-height: 1.4;
+}

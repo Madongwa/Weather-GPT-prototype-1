@@ -1,0 +1,99 @@
+.sidebar__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  padding: 0;
+  z-index: 40;
+  cursor: pointer;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--color-card-bg);
+  border-right: 1px solid var(--color-card-border);
+  padding: 20px 16px;
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+  z-index: 50;
+  overflow-y: auto;
+}
+
+.sidebar--open {
+  transform: translateX(0);
+}
+
+.sidebar__title {
+  margin: 0 0 20px;
+  padding: 0 10px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.sidebar__group {
+  margin-bottom: 16px;
+}
+
+.sidebar__group:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar__group-label {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  color: var(--color-text-faint);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar__link {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+/* Gated on hover *capability*, not screen width — see breakpoints.css.
+   Without this, a tap on a touchscreen leaves the hover style "stuck"
+   on until the user taps something else. */
+@media (hover: hover) {
+  .sidebar__link:hover {
+    background: var(--color-card-border);
+    color: var(--color-text);
+  }
+}
+
+.sidebar__link--active {
+  background: var(--color-card-border);
+  color: var(--color-accent);
+}
+
+/* Desktop (see src/styles/breakpoints.js): pin the drawer open
+   permanently and drop the backdrop — AppShell.css pads the rest of
+   the layout to make room for it. */
+@media (min-width: 900px) {
+  .sidebar__backdrop {
+    display: none;
+  }
+
+  .sidebar {
+    transform: translateX(0);
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "common": {
+    "offline": "ఆఫ్‌లైన్",
+    "listen": "వినండి",
+    "share": "షేర్ చేయండి",
+    "viewDetails": "వివరాలు చూడండి",
+    "askAboutThis": "దీని గురించి అడగండి",
+    "cancel": "రద్దు చేయండి",
+    "submit": "సమర్పించండి"
+  },
+  "nav": {
+    "home": "హోమ్",
+    "ask": "అడగండి",
+    "forecast": "సూచన",
+    "myAdvice": "నా సలహా",
+    "alerts": "హెచ్చరికలు & నివేదికలు",
+    "sos": "SOS",
+    "communityReports": "సంఘం నివేదికలు",
+    "notifications": "నోటిఫికేషన్‌లు",
+    "yourRole": "మీ పాత్ర",
+    "history": "చరిత్ర",
+    "trustSources": "నమ్మకం & మూలాలు",
+    "settings": "సెట్టింగ్‌లు",
+    "about": "గురించి",
+    "groupSafety": "భద్రత",
+    "groupYou": "మీరు",
+    "groupMore": "మరిన్ని"
+  },
+  "demoBanner": {
+    "text": "డెమో డేటా — ఇది అధికారిక హెచ్చరిక కాదు."
+  },
+  "home": {
+    "useMyLocation": "నా స్థానాన్ని ఉపయోగించండి",
+    "locating": "కనుగొంటోంది…",
+    "checkIn": "చెక్ ఇన్",
+    "imSafe": "నేను సురక్షితంగా ఉన్నాను",
+    "needHelp": "నాకు సహాయం కావాలి",
+    "quickLinkAsk": "అడగండి",
+    "quickLinkAlerts": "హెచ్చరికలు",
+    "quickLinkAdvice": "నా సలహా"
+  },
+  "myAdvice": {
+    "title": "నా సలహా",
+    "disclaimer": "ఇది నిర్ణయ మద్దతు మాత్రమే, అధికారిక ఆదేశం కాదు — ఎల్లప్పుడూ IMD మరియు ప్రభుత్వ హెచ్చరికలను ముందుగా అనుసరించండి.",
+    "forRole": "కోసం",
+    "noGuidance": "ప్రస్తుతం నిర్దిష్ట సలహా లేదు."
+  },
+  "yourRole": {
+    "title": "మీ పాత్ర",
+    "note": "పాత్రను ఎంచుకోవడం వల్ల నా సలహా మీకు నిజంగా ముఖ్యమైన విషయాలకు అనుగుణంగా మారుతుంది."
+  },
+  "notifications": {
+    "title": "నోటిఫికేషన్‌లు",
+    "markAllRead": "అన్నీ చదివినట్లు గుర్తించండి",
+    "empty": "ఇక్కడ ఇంకా ఏమీ లేదు.",
+    "acknowledge": "అంగీకరించండి"
+  },
+  "trustSources": {
+    "title": "నమ్మకం & మూలాలు",
+    "demoModeTitle": "డెమో మోడ్",
+    "dataSourcesTitle": "డేటా మూలాలు",
+    "recheck": "మళ్ళీ తనిఖీ చేయండి",
+    "howThisWorksTitle": "ఇది ఎలా పనిచేస్తుంది",
+    "scenarioSimulatorsTitle": "సన్నివేశ అనుకరణలు"
+  },
+  "alerts": {
+    "title": "హెచ్చరికలు & నివేదికలు",
+    "sendSos": "SOS పంపండి",
+    "officialAlerts": "అధికారిక హెచ్చరికలు",
+    "viewCommunityReports": "సంఘం నివేదికలు",
+    "noAlerts": "ప్రస్తుతం చురుకైన హెచ్చరికలు లేవు."
+  },
+  "sos": {
+    "title": "SOS పంపండి",
+    "peopleWithYou": "మీతో ఉన్న వ్యక్తులు",
+    "medicalHelpNeeded": "వైద్య సహాయం అవసరం",
+    "additionalDetail": "అదనపు వివరాలు (ఐచ్ఛికం)",
+    "tapAgainToSend": "పంపడానికి మళ్ళీ నొక్కండి",
+    "offlineNote": "నెట్‌వర్క్ లేకుండా పనిచేస్తుంది — కనెక్షన్ తిరిగి వచ్చినప్పుడు స్వయంచాలకంగా పంపుతుంది.",
+    "yourSentMessages": "మీరు పంపిన SOS సందేశాలు",
+    "nothingSentYet": "ఇంకా ఏమీ పంపలేదు."
+  },
+  "communityReports": {
+    "title": "సంఘం నివేదికలు",
+    "note": "సమీపంలోని వ్యక్తుల నివేదికలు — వరదలు, నష్టం, నీటి నిలుపుదల. ధృవీకరించబడలేదు, అధికారిక హెచ్చరికల నుండి దృశ్యపరంగా వేరుగా ఉంచబడతాయి.",
+    "reportSomething": "ఏదైనా నివేదించండి",
+    "noReports": "ఇంకా సంఘం నివేదికలు లేవు."
+  },
+  "forecast": {
+    "title": "సూచన"
+  },
+  "history": {
+    "title": "చరిత్ర"
+  },
+  "settings": {
+    "title": "సెట్టింగ్‌లు",
+    "languageTitle": "భాష",
+    "unitsTitle": "యూనిట్లు",
+    "notificationsTitle": "నోటిఫికేషన్ ప్రాధాన్యతలు"
+  },
+  "about": {
+    "title": "గురించి"
+  },
+  "ask": {
+    "heading": "నేటి వాతావరణం గురించి ఏదైనా అడగండి",
+    "hearAnswersAloud": "సమాధానాలను వినండి",
+    "typeYourMessage": "మీ సందేశాన్ని టైప్ చేయండి",
+    "quickListen": "వినండి",
+    "quickForecast": "సూచన",
+    "quickAdvice": "సలహా",
+    "quickSettings": "సెట్టింగ్‌లు"
+  }
+}

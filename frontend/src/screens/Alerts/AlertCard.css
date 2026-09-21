@@ -1,0 +1,74 @@
+.alert-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alert-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.alert-card__hazard {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.alert-card__description {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.alert-card__meta {
+  display: flex;
+  gap: 8px;
+}
+
+.alert-card__tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text-muted);
+}
+
+.alert-card__tag--simulated {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.alert-card__tag--stale {
+  border-color: var(--color-amber);
+  color: var(--color-amber);
+}
+
+.alert-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.alert-card__action-link {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .alert-card__action-link:hover {
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,101 @@
+.ask-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ask-screen__interaction {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 32px 0;
+}
+
+.ask-screen__chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ask-screen__chip {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .ask-screen__chip:hover {
+    border-color: var(--color-accent);
+  }
+}
+
+/* Conversation history only exists as a desktop concept for now —
+   hidden below the breakpoint rather than not rendered, see AskScreen.jsx. */
+.ask-screen__history {
+  display: none;
+}
+
+/* Desktop (see src/styles/breakpoints.js): two-pane layout. Left pane
+   (interaction) keeps the mic + input at ~60% width; right pane
+   (history) takes the remaining ~40% as a scrollable feed. This is a
+   deliberate redesign, not just a wider version of the mobile column —
+   the single "latest answer" card only makes sense when there's no
+   room to show more than one answer at a time. */
+@media (min-width: 900px) {
+  .ask-screen {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 40px;
+  }
+
+  .ask-screen__interaction {
+    flex: 0 0 60%;
+    max-width: 60%;
+    padding: 0;
+  }
+
+  .ask-screen__interaction .ask-input-bar {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .ask-screen__mobile-answer {
+    display: none;
+  }
+
+  .ask-screen__history {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 40%;
+    max-width: 40%;
+    min-height: 0;
+    padding: 8px 0;
+  }
+
+  .ask-screen__history-title {
+    margin: 0 0 16px;
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .ask-screen__history-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-right: 4px;
+  }
+}
