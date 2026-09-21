@@ -4,6 +4,13 @@
   gap: 10px;
 }
 
+.ask-input-bar__error {
+  margin: 6px 0 0;
+  color: var(--color-amber);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
 /* Sparkle sits inside the pill — this wrapper is what makes that
    possible: input gets left padding to clear the icon, icon is
    absolutely positioned within this relative container. */
@@ -48,12 +55,14 @@
     border-color: var(--color-accent);
   }
 
-  .ask-input-bar__mic:hover {
+  .ask-input-bar__mic:hover,
+  .ask-input-bar__send:hover {
     background: var(--color-accent-hover);
   }
 }
 
-.ask-input-bar__mic {
+.ask-input-bar__mic,
+.ask-input-bar__send {
   flex-shrink: 0;
   width: 44px;
   height: 44px;

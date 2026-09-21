@@ -8,8 +8,8 @@ import ur from './locales/ur.json'
 /**
  * Only static UI chrome (nav labels, buttons, titles, disclaimers) is
  * translated here — role and district names, and anything that comes
- * from the backend or the LLM (weather text, alert descriptions,
- * Claude's answers), stay in English. Translating live/dynamic content
+ * from the backend or the LLM (weather text, alert descriptions, Ask
+ * screen answers), stay in English. Translating live/dynamic content
  * needs a real translation service, not a static key file — see
  * constants/languages.js for the fuller note on why that's a separate,
  * later piece of work.

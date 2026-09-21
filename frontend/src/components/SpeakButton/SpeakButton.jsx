@@ -1,53 +1,47 @@
 import { useState } from 'react'
-import { isSpeechRecognitionSupported, listenOnce } from '../../utils/speech'
+import { listenOnce } from '../../utils/speech'
 import './SpeakButton.css'
 
 /**
  * The big tappable mic button — a plain circle (not the original
  * organic "blob" shape) so it reads consistently wherever it's reused.
- * Uses the browser's native SpeechRecognition API (see utils/speech.js)
- * — real speech-to-text, no backend call and no API key, but support
- * varies by browser (reliable in Chrome/Edge; unsupported in Firefox as
- * of this writing). When unsupported, tapping shows a brief message
- * instead of pretending to listen.
+ * Talks to the device's native speech recognizer via the
+ * @capacitor-community/speech-recognition plugin (see utils/speech.js)
+ * — the app runs inside an Android WebView (see android/), where the
+ * browser's own SpeechRecognition API doesn't exist at all, so this
+ * can't be a plain Web Speech API call. `listenOnce()` handles the
+ * availability check and the (real, native, first-time-only) permission
+ * dialog internally and throws a specific message on failure, which is
+ * shown here rather than the button silently doing nothing.
  *
  * Shared between the Home screen's hero card and the Ask screen (see
  * AskContext for the conversation state both feed into) — extracted
- * once so neither has its own copy of the listening/unsupported state
+ * once so neither has its own copy of the listening/error state
  * machine to keep in sync.
  *
  * `onResult(transcript)` is called with the recognized text.
  */
 function SpeakButton({ onResult }) {
   const [listening, setListening] = useState(false)
-  const [unsupported, setUnsupported] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleClick = async () => {
     if (listening) return
 
-    if (!isSpeechRecognitionSupported) {
-      setUnsupported(true)
-      setTimeout(() => setUnsupported(false), 2500)
-      return
-    }
-
     setListening(true)
+    setErrorMessage('')
     try {
       const transcript = await listenOnce()
       onResult?.(transcript)
-    } catch {
-      // No speech detected, mic permission denied, etc. — just stop
-      // listening; the user can tap again.
+    } catch (error) {
+      setErrorMessage(error.message || 'Could not start listening — try typing instead.')
+      setTimeout(() => setErrorMessage(''), 3000)
     } finally {
       setListening(false)
     }
   }
 
-  const label = unsupported
-    ? 'Speech recognition not supported in this browser'
-    : listening
-      ? 'Listening…'
-      : 'Tap to talk'
+  const label = errorMessage || (listening ? 'Listening…' : 'Tap to talk')
 
   return (
     <div className="speak-button">

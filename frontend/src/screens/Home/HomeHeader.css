@@ -34,6 +34,7 @@
    button — a positioning context for whichever PickerPopover is open. */
 .home-header__pill-wrap {
   position: relative;
+  flex-shrink: 0;
 }
 
 .home-header__location {
@@ -52,16 +53,31 @@
   }
 }
 
+/* Role/online/language pills + settings gear rarely all fit on one row
+   at real phone widths (~360-412dp) once every pill's own padding is
+   counted — wrapping them made the header look broken/cramped on a
+   real device. Scrolling horizontally (same pattern as the role-pills
+   and scenario-button rows elsewhere) keeps everything on one line and
+   reachable, instead of stacking into a second row. */
 .home-header__actions {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: none;
+}
+
+.home-header__actions::-webkit-scrollbar {
+  display: none;
 }
 
 .home-header__online-pill {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   gap: var(--space-1);
   background: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
@@ -77,6 +93,8 @@
 
 .home-header__role-pill,
 .home-header__language-pill {
+  flex-shrink: 0;
+  white-space: nowrap;
   background: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
   color: var(--color-text);

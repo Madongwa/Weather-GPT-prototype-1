@@ -15,15 +15,15 @@ const PROBLEM_STATEMENT = [
 const PIPELINE_STEPS = [
   {
     name: 'Grounding Layer',
-    note: 'Pulls real weather and hazard data from live sources — Open-Meteo today, with IMD and NDMA CAP feeds stubbed until public API access exists — before any answer gets generated.',
+    note: 'Pulls real weather and hazard data from live sources before any answer gets generated — Open-Meteo for current conditions, plus a live web search (Tavily) biased toward IMD and NDMA so their real advisories reach the answer even without a direct public API from either.',
   },
   {
     name: 'Arbiter',
-    note: 'Cross-checks sources when more than one is live, and decides what can be stated as fact versus what needs a caveat.',
+    note: 'Hands every live source it found to the phrasing step together, so an answer is only marked Grounded when at least one of them actually succeeded. Still simple — it does not yet algorithmically flag disagreements between sources if they conflict.',
   },
   {
     name: 'LLM phrasing',
-    note: "Claude turns the grounded facts into a clear, conversational answer in the user's chosen language — it never invents numbers the Grounding Layer didn't supply.",
+    note: "An LLM (served via Groq) turns the grounded facts into a clear, conversational answer tailored to the user's role — it never invents numbers the Grounding Layer didn't supply.",
   },
 ]
 

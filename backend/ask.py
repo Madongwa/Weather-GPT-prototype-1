@@ -1,19 +1,29 @@
 """
-LLM-driven question answering — the first real (non-mock) "Ask" logic.
+LLM-driven question answering — the Grounding Layer -> Arbiter -> LLM
+phrasing pipeline described on the About screen, now with a real second
+live source: Open-Meteo (current conditions, see weather.py) and
+Tavily-sourced web results biased toward IMD/NDMA (see search.py). The
+"Arbiter" step here is still simple — both sources just get handed to
+the LLM together rather than being algorithmically cross-checked — but
+it's no longer the single-source stand-in the project started with.
 
-This grounds Claude's answer directly in the same live Open-Meteo data
-/weather serves, by putting it straight into the prompt. That's a
-deliberately simple first version of the Arbiter/Grounding Layer concept
-from the project's architecture: with exactly one real data source right
-now, "grounded" just means "did we actually have that source's data when
-we answered." A real Arbiter — cross-checking multiple sources and
-flagging conflicts — is worth building once there's a second live source
-(e.g. IMD's own feed) to reconcile against.
+Phrasing runs on Groq (an OpenAI-compatible chat completions API
+hosting open models — a fast-inference platform, not to be confused
+with xAI's similarly-named Grok, which was the original ask here but
+requires paid credits with no free tier; see .env.example) rather than
+Claude. `MODEL` below is a reasoning model (gpt-oss-120b);
+`reasoning_effort: "low"` keeps it fast for a short conversational
+answer instead of spending its token budget on visible chain-of-thought.
 """
 
-import anthropic
+import os
 
-MODEL = "claude-opus-5"
+import httpx
+
+from search import SearchUnavailableError, search_weather_advisories
+
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+MODEL = "openai/gpt-oss-120b"
 
 SYSTEM_PROMPT = """You are WeatherGPT, a disaster-preparedness assistant for \
 Indian citizens, built for a Ministry of Earth Sciences / IMD hackathon project.
@@ -23,16 +33,23 @@ their stated role (e.g. a farmer cares about harvesting, a driver about road \
 conditions).
 
 Ground every specific claim (temperature, rain, wind, warnings) in the CURRENT \
-CONDITIONS data given to you — never invent numbers or forecasts that aren't in \
-that data. If no current-conditions data is provided, say plainly that live data \
-isn't available right now, and give only general, non-specific safety guidance.
+CONDITIONS and WEB ADVISORIES data given to you — never invent numbers or \
+forecasts that aren't in that data. If neither is available, say plainly that \
+live data isn't available right now, and give only general, non-specific safety \
+guidance.
 
 Always end with a short reminder that this is decision support, not an official \
 instruction, and to follow IMD/government warnings first."""
 
 
 class AskUnavailableError(Exception):
-    """Raised when the Claude API call itself fails."""
+    """Raised when the phrasing LLM call itself fails."""
+
+
+def _format_advisories(advisories: list[dict]) -> str:
+    if not advisories:
+        return "No additional web advisories found."
+    return "\n\n".join(f"- {a['title']} ({a['url']}): {a['content'][:400]}" for a in advisories)
 
 
 async def answer_question(
@@ -40,10 +57,23 @@ async def answer_question(
     district: str,
     role: str,
     weather_summary: str | None,
-) -> str:
-    # No explicit api_key= — the SDK reads ANTHROPIC_API_KEY from the
-    # environment (see .env.example / load_dotenv() in main.py).
-    client = anthropic.AsyncAnthropic()
+) -> tuple[str, list[dict]]:
+    # Checked up front rather than left to raise from inside the SDK/
+    # HTTP call — an unhandled exception here would escape FastAPI's
+    # own exception handling (Starlette's ServerErrorMiddleware sits
+    # outside CORSMiddleware), producing a raw response with no CORS
+    # headers instead of a clean 503. See main.py's /ask route, which
+    # catches AskUnavailableError and turns it into one.
+    if not os.environ.get("GROQ_API_KEY"):
+        raise AskUnavailableError("GROQ_API_KEY is not configured.")
+
+    # The web-search source is allowed to fail independently — losing
+    # it degrades to Open-Meteo-only grounding (the original single-
+    # source behavior) rather than failing the whole question.
+    try:
+        advisories = await search_weather_advisories(district, question)
+    except SearchUnavailableError:
+        advisories = []
 
     conditions_text = (
         weather_summary
@@ -55,21 +85,29 @@ async def answer_question(
         f"District: {district}\n"
         f"Role: {role}\n\n"
         f"Current conditions:\n{conditions_text}\n\n"
+        f"Web advisories:\n{_format_advisories(advisories)}\n\n"
         f"Question: {question}"
     )
 
     try:
-        # effort "low": this is a short conversational answer, not a hard
-        # reasoning task, so we trade away thinking depth for latency —
-        # worth revisiting if answer quality turns out to need more.
-        response = await client.messages.create(
-            model=MODEL,
-            max_tokens=1024,
-            system=SYSTEM_PROMPT,
-            output_config={"effort": "low"},
-            messages=[{"role": "user", "content": user_content}],
-        )
-    except anthropic.APIError as exc:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.post(
+                GROQ_URL,
+                headers={"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"},
+                json={
+                    "model": MODEL,
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": user_content},
+                    ],
+                    "max_tokens": 400,
+                    "reasoning_effort": "low",
+                },
+            )
+            response.raise_for_status()
+            data = response.json()
+    except httpx.HTTPError as exc:
         raise AskUnavailableError(str(exc)) from exc
 
-    return next((block.text for block in response.content if block.type == "text"), "")
+    answer = data["choices"][0]["message"]["content"]
+    return answer, advisories

@@ -1,0 +1,9 @@
+{
+  "appId": "com.parallax.weathergpt",
+  "appName": "WeatherGPT",
+  "webDir": "dist",
+  "backgroundColor": "#0b1712",
+  "android": {
+    "backgroundColor": "#0b1712"
+  }
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Geolocation } from '@capacitor/geolocation'
 import { useAppSettings } from '../../context/AppSettingsContext'
 import { useAsk } from '../../context/AskContext'
 import { useWeather } from '../../hooks/useWeather'
@@ -57,25 +58,35 @@ function HomeScreen() {
   const [locationMessage, setLocationMessage] = useState('')
   const [checkinMessage, setCheckinMessage] = useState('')
 
-  const handleUseLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationMessage('Geolocation is not supported in this browser.')
-      return
-    }
+  // The browser's navigator.geolocation doesn't apply here — the app
+  // runs inside an Android WebView (see android/), where @capacitor/
+  // geolocation bridges to the real native location APIs instead. That
+  // means an explicit permission step: requestPermissions() triggers a
+  // real system dialog the first time (not a silent browser prompt),
+  // and getCurrentPosition() only runs once that's granted.
+  const handleUseLocation = async () => {
     setLocating(true)
     setLocationMessage('')
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const nearest = findNearestDistrict(position.coords.latitude, position.coords.longitude)
-        setDistrict(nearest)
-        setLocationMessage(`Closest sample district: ${nearest}.`)
-        setLocating(false)
-      },
-      () => {
-        setLocationMessage('Could not get your location — check browser permissions.')
-        setLocating(false)
-      },
-    )
+    try {
+      const permission = await Geolocation.requestPermissions()
+      if (permission.location !== 'granted' && permission.coarseLocation !== 'granted') {
+        setLocationMessage(`Location access denied — using ${district} instead.`)
+        return
+      }
+      // A longer timeout than the plugin's 10s default — a real cold GPS
+      // fix (and the emulator's simulated one, set via Extended
+      // Controls or `adb emu geo fix`) can take longer than that,
+      // enableHighAccuracy prefers GPS over network location, which is
+      // what a mocked emulator location actually feeds.
+      const position = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 20000 })
+      const nearest = findNearestDistrict(position.coords.latitude, position.coords.longitude)
+      setDistrict(nearest)
+      setLocationMessage(`Closest sample district: ${nearest}.`)
+    } catch {
+      setLocationMessage(`Location access denied — using ${district} instead.`)
+    } finally {
+      setLocating(false)
+    }
   }
 
   const handleSafeCheckin = async (status) => {

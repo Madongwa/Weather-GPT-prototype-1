@@ -2,8 +2,9 @@
 const ASK_URL = `${import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'}/ask`
 
 /**
- * Calls the backend's /ask route — a real Claude call grounded in live
- * weather data server-side (see backend/ask.py). This is a plain async
+ * Calls the backend's /ask route — a real LLM call (Groq), grounded in
+ * live weather data and a live web search server-side (see
+ * backend/ask.py). This is a plain async
  * function rather than a hook because it's triggered by a user action
  * (submitting a question), not something a component needs on mount.
  */

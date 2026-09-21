@@ -24,16 +24,21 @@ async def _check_open_meteo() -> str:
         return "unreachable"
 
 
-def _check_anthropic() -> str:
-    return "connected" if os.environ.get("ANTHROPIC_API_KEY") else "unconfigured"
+def _check_groq() -> str:
+    return "connected" if os.environ.get("GROQ_API_KEY") else "unconfigured"
+
+
+def _check_tavily() -> str:
+    return "connected" if os.environ.get("TAVILY_API_KEY") else "unconfigured"
 
 
 @router.get("")
 async def get_status():
     return {
         "open_meteo": await _check_open_meteo(),
-        "claude_llm": _check_anthropic(),
-        "imd": "stub",  # No public IMD API exists.
+        "groq_llm": _check_groq(),
+        "tavily_search": _check_tavily(),
+        "imd": "stub",  # No public IMD API exists — Tavily searches its site instead.
         "wis2_ndma_cap": "stub",  # No public feed access exists.
         "database": "connected",  # If this handler ran at all, sqlite is reachable.
         # STT/TTS run entirely client-side (browser Web Speech APIs) and

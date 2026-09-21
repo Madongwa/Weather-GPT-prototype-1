@@ -5,12 +5,14 @@ import { DEMO_MODE_OPTIONS } from '../../constants/demoModes'
 import { getBackendStatus } from '../../api/status'
 import { simulateAlert } from '../../api/alerts'
 import { createNotification } from '../../api/notifications'
-import { isSpeechRecognitionSupported, isSpeechSynthesisSupported } from '../../utils/speech'
+import { isSpeechSynthesisSupported } from '../../utils/speech'
+import { useSpeechRecognitionSupport } from '../../hooks/useSpeechRecognitionSupport'
 import './TrustSourcesScreen.css'
 
 const SOURCE_LABELS = {
   open_meteo: 'Open-Meteo',
-  claude_llm: 'Claude (LLM)',
+  groq_llm: 'Groq (LLM)',
+  tavily_search: 'Tavily (web search)',
   imd: 'IMD',
   wis2_ndma_cap: 'WIS2.0 / NDMA CAP',
   database: 'Database (SQLite)',
@@ -18,8 +20,11 @@ const SOURCE_LABELS = {
 
 const SOURCE_WHY = {
   open_meteo: 'A free public forecast API — the only weather source actually wired up live.',
-  claude_llm: 'Powers the Ask screen. "Connected" means an API key is configured, not that a request was just made.',
-  imd: "IMD has no public API — this stays a stub shaped like their real feed format.",
+  groq_llm:
+    'Phrases the Ask screen\'s answers from whatever the Grounding Layer found. "Connected" means an API key is configured, not that a request was just made.',
+  tavily_search:
+    'Searches the live web for each question, biased toward IMD and NDMA — the real second grounding source alongside Open-Meteo. Falls back to Open-Meteo-only grounding if unreachable.',
+  imd: 'IMD has no public API of its own — Tavily searches mausam.imd.gov.in directly instead, so this stays a "stub" for a dedicated IMD integration even though real IMD content does reach answers now.',
   wis2_ndma_cap: 'No public feed access exists — same reasoning as IMD.',
   database: "If this status board loaded at all, the database answered — it's local to this backend.",
 }
@@ -50,6 +55,7 @@ function TrustSourcesScreen() {
   const [status, setStatus] = useState(null)
   const [statusError, setStatusError] = useState(false)
   const [simulateMessage, setSimulateMessage] = useState('')
+  const speechRecognitionSupported = useSpeechRecognitionSupport()
 
   const refreshStatus = () => {
     setStatusError(false)
@@ -125,8 +131,8 @@ function TrustSourcesScreen() {
             ))}
           <SourceRow
             label="Speech-to-text"
-            status={isSpeechRecognitionSupported ? 'connected' : 'unconfigured'}
-            why="Runs entirely in your browser (Web Speech API) — no backend, no API key. Support varies by browser."
+            status={speechRecognitionSupported ? 'connected' : 'unconfigured'}
+            why="Native device speech recognition via the @capacitor-community/speech-recognition plugin — no backend, no API key. Requires a one-time microphone permission grant."
           />
           <SourceRow
             label="Text-to-speech"
@@ -152,12 +158,12 @@ function TrustSourcesScreen() {
           <HowRow
             label="Weather grounding for Ask answers"
             tag="LIVE"
-            note="Claude's answer is only marked Grounded when a live Open-Meteo fetch actually succeeded."
+            note="The answer is only marked Grounded when a live Open-Meteo fetch, a live web search, or both actually succeeded."
           />
           <HowRow
             label="Multi-source Arbiter (cross-checking conflicting sources)"
-            tag="UNCONFIGURED"
-            note="Needs a second live data source to reconcile against — only Open-Meteo is live so far."
+            tag="LIVE"
+            note="Open-Meteo and a live Tavily web search (biased toward IMD/NDMA) both feed the same answer now — a real second source exists. Still simple, though: both get handed to the LLM together rather than being algorithmically reconciled if they disagree."
           />
         </ul>
       </section>

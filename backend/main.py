@@ -3,8 +3,9 @@ WeatherGPT backend — FastAPI app.
 
 /health is a liveness check the frontend polls to drive the connectivity
 dot. /weather and /ask are the two real (non-mock) data routes — Open-
-Meteo and a Claude call grounded in that same weather data. Everything
-else (alerts, sos, reports, notifications, checkins, geofence, status,
+Meteo, and a Groq LLM call grounded in that same weather data plus a
+live Tavily web search (see ask.py / search.py). Everything else
+(alerts, sos, reports, notifications, checkins, geofence, status,
 admin) is real, persisted (SQLite via db.py) app functionality, not
 mock data — see each module's own docstring for what's still a stand-in
 (e.g. geofence.py's simplified district polygons) versus fully real.
@@ -14,9 +15,10 @@ import os
 
 from dotenv import load_dotenv
 
-# Must run before ask.py's AsyncAnthropic() client is constructed (which
-# happens per-request, but the env var needs to already be set by then) —
-# loads backend/.env into the process environment. See .env.example.
+# Must run before ask.py's GROQ_API_KEY / search.py's TAVILY_API_KEY
+# checks happen (per-request, but the env vars need to already be set
+# by then) — loads backend/.env into the process environment. See
+# .env.example.
 load_dotenv()
 
 from fastapi import FastAPI, HTTPException, Query
@@ -62,6 +64,14 @@ origins = [
     # if that port is already taken on your machine, so we allow a small range.
     *(f"http://localhost:{port}" for port in range(5173, 5178)),
     *(f"http://127.0.0.1:{port}" for port in range(5173, 5178)),
+    # The packaged Android app (see frontend/android/) isn't a normal web
+    # origin — Capacitor's WebView serves the bundled app from this fixed
+    # origin by default (see frontend/capacitor.config.json — no
+    # `server.hostname` override), regardless of what machine or emulator
+    # it's running on. Without this, every fetch from the app fails CORS
+    # before even reaching a route (confirmed via logcat: requests were
+    # sent, but the browser blocked the response client-side).
+    "https://localhost",
 ]
 
 # The deployed frontend's origin (e.g. https://weather-gpt-....vercel.app)
@@ -120,10 +130,10 @@ class AskRequest(BaseModel):
 async def post_ask(payload: AskRequest):
     """
     LLM-driven Q&A. Tries to fetch live weather for the district first and
-    hands that to Claude as grounding context; `grounded` in the response
-    reflects whether that fetch actually succeeded, not whether Claude
-    merely sounds confident — see ask.py's docstring for why this is a
-    deliberately simple first cut of the Arbiter/Grounding concept.
+    hands that (plus a live web search biased toward IMD/NDMA — see
+    search.py) to the phrasing LLM as grounding context; `grounded` in
+    the response reflects whether at least one of those live fetches
+    actually succeeded, not whether the answer merely sounds confident.
     """
     coordinates = DISTRICT_COORDINATES.get(payload.district)
     weather_summary: str | None = None
@@ -140,10 +150,10 @@ async def post_ask(payload: AskRequest):
             )
             grounded = True
         except WeatherUnavailableError:
-            pass  # Fall through and let Claude answer without live grounding.
+            pass  # Fall through and let the LLM answer without weather grounding.
 
     try:
-        answer = await answer_question(
+        answer, advisories = await answer_question(
             question=payload.question,
             district=payload.district,
             role=payload.role,
@@ -152,9 +162,20 @@ async def post_ask(payload: AskRequest):
     except AskUnavailableError as exc:
         raise HTTPException(status_code=503, detail="The LLM service is unreachable right now") from exc
 
+    if advisories:
+        grounded = True
+
+    source_parts = []
+    if weather_summary:
+        source_parts.append("Open-Meteo")
+    if advisories:
+        source_parts.append("web search")
+    source_label = f"{' + '.join(source_parts)} · live" if source_parts else "No live data available"
+
     return {
         "answer": answer,
         "grounded": grounded,
-        "source_label": "Open-Meteo · live" if grounded else "No live data available",
-        "model": "claude-opus-5",
+        "source_label": source_label,
+        "sources": advisories,
+        "model": "groq/gpt-oss-120b",
     }

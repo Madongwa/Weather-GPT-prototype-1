@@ -1,4 +1,12 @@
+/* Leaflet's own internal panes/controls use z-index up to 1000 — far
+   above every overlay this app has (drawer, popovers, banners all sit
+   under 100). `isolation: isolate` gives this container its own
+   stacking context, so Leaflet's internal values only compete with
+   each other in here instead of leaking out and rendering on top of
+   the nav drawer, popovers, etc. */
 .hazard-map {
+  position: relative;
+  isolation: isolate;
   width: 100%;
   border-radius: 16px;
   overflow: hidden;
