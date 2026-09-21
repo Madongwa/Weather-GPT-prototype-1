@@ -23,6 +23,23 @@ def _row_to_dict(row) -> dict:
     }
 
 
+def insert_notification(conn, *, device_id: str | None, title: str, body: str, level: str = "info") -> int:
+    """
+    Shared insert, taking an already-open connection rather than opening
+    its own — lets a caller that's already inside a `with get_connection()`
+    block (like alerts.py's auto-advance sweep) add a notification as
+    part of the same transaction, instead of nesting a second connection.
+    `device_id=None` broadcasts to every device (list_notifications already
+    treats a NULL device_id as "for everyone"), which is what a lifecycle
+    change on a shared alert should do.
+    """
+    cursor = conn.execute(
+        "INSERT INTO notifications (device_id, title, body, level) VALUES (?, ?, ?, ?)",
+        (device_id, title, body, level),
+    )
+    return cursor.lastrowid
+
+
 @router.get("")
 def list_notifications(device_id: str = Depends(get_device_id)):
     with get_connection() as conn:
@@ -44,11 +61,9 @@ def create_notification(payload: CreateNotificationRequest, device_id: str = Dep
     """Lets the frontend log its own client-side events (e.g. a scenario
     simulator firing) into the same persisted history."""
     with get_connection() as conn:
-        cursor = conn.execute(
-            "INSERT INTO notifications (device_id, title, body, level) VALUES (?, ?, ?, ?)",
-            (device_id, payload.title, payload.body, payload.level),
+        notification_id = insert_notification(
+            conn, device_id=device_id, title=payload.title, body=payload.body, level=payload.level
         )
-        notification_id = cursor.lastrowid
         row = conn.execute("SELECT * FROM notifications WHERE id = ?", (notification_id,)).fetchone()
     return _row_to_dict(row)
 

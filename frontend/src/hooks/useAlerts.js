@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { listAlerts } from '../api/alerts'
 import { SAMPLE_ALERTS } from '../screens/Alerts/sampleAlerts'
 import { getCached, setCached } from '../utils/offlineCache'
@@ -18,7 +18,7 @@ export function useAlerts(district) {
   const [alerts, setAlerts] = useState([])
   const [usingSampleAlerts, setUsingSampleAlerts] = useState(false)
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     const cacheKey = `alerts.${district ?? 'all'}`
     listAlerts(district)
       .then((data) => {
@@ -36,9 +36,20 @@ export function useAlerts(district) {
         setAlerts(cached ? cached.data : SAMPLE_ALERTS)
         setUsingSampleAlerts(true)
       })
-  }
+  }, [district])
 
-  useEffect(refresh, [district])
+  // Polled, not just fetched once — the backend now auto-advances
+  // simulated alerts' lifecycle on every read (see backend/alerts.py's
+  // "lazy advancement on read"), which only becomes visible in the UI if
+  // something actually re-fetches periodically. 15s keeps the demo
+  // simulators' Detected -> Issued -> Live -> Resolved progression
+  // visible without an explicit user action, without hammering the
+  // backend the way a 1-2s interval would.
+  useEffect(() => {
+    refresh()
+    const interval = setInterval(refresh, 15000)
+    return () => clearInterval(interval)
+  }, [refresh])
 
   return { alerts, usingSampleAlerts, refresh }
 }

@@ -50,6 +50,7 @@ def init_db():
                 district TEXT,
                 is_simulated INTEGER NOT NULL DEFAULT 0,
                 expires_at TEXT,
+                next_stage_at TEXT,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
 
