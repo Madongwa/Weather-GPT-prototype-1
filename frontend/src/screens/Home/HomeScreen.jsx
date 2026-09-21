@@ -52,7 +52,9 @@ function HomeScreen() {
     : loading
       ? 'Loading'
       : data
-        ? `Open-Meteo · ${formatFetchedAt(data.fetched_at)}`
+        ? data.stale
+          ? `Cached · ${formatFetchedAt(data.cachedAt)}`
+          : `Open-Meteo · ${formatFetchedAt(data.fetched_at)}`
         : error
           ? 'Unreachable'
           : 'Unavailable'

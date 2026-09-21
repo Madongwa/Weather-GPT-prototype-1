@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getCached, setCached } from '../utils/offlineCache'
 
 // Same VITE_API_BASE override as api/client.js.
 const WEATHER_URL = `${import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'}/weather`
@@ -26,16 +27,29 @@ export function useWeather(district) {
     let cancelled = false
     setState({ data: null, error: null, loading: true })
 
+    const cacheKey = `weather.${district}`
+
     fetch(`${WEATHER_URL}?district=${encodeURIComponent(district)}`)
       .then((response) => {
         if (!response.ok) throw new Error(`Unexpected status ${response.status}`)
         return response.json()
       })
       .then((data) => {
-        if (!cancelled) setState({ data, error: null, loading: false })
+        if (cancelled) return
+        setCached(cacheKey, data)
+        setState({ data, error: null, loading: false })
       })
       .catch((error) => {
-        if (!cancelled) setState({ data: null, error, loading: false })
+        if (cancelled) return
+        // Offline or the request failed — fall back to the last real
+        // fetch for this district rather than a bare error, but flagged
+        // `stale` so callers can show it as "cached", not live.
+        const cached = getCached(cacheKey)
+        if (cached) {
+          setState({ data: { ...cached.data, stale: true, cachedAt: cached.fetchedAt }, error, loading: false })
+        } else {
+          setState({ data: null, error, loading: false })
+        }
       })
 
     return () => {

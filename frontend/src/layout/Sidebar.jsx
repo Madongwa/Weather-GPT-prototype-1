@@ -39,6 +39,7 @@ const NAV_GROUPS = [
     label: 'nav.groupMore',
     items: [
       { to: '/trust', key: 'nav.trustSources' },
+      { to: '/offline', key: 'nav.offline' },
       { to: '/settings', key: 'nav.settings' },
       { to: '/about', key: 'nav.about' },
     ],

@@ -14,6 +14,7 @@ import NotificationsScreen from './screens/Notifications/NotificationsScreen'
 import YourRoleScreen from './screens/YourRole/YourRoleScreen'
 import HistoryScreen from './screens/History/HistoryScreen'
 import TrustSourcesScreen from './screens/TrustSources/TrustSourcesScreen'
+import OfflineScreen from './screens/Offline/OfflineScreen'
 import SettingsScreen from './screens/Settings/SettingsScreen'
 import AboutScreen from './screens/About/AboutScreen'
 
@@ -48,6 +49,7 @@ function App() {
               <Route path="/role" element={<YourRoleScreen />} />
               <Route path="/history" element={<HistoryScreen />} />
               <Route path="/trust" element={<TrustSourcesScreen />} />
+              <Route path="/offline" element={<OfflineScreen />} />
               <Route path="/settings" element={<SettingsScreen />} />
               <Route path="/about" element={<AboutScreen />} />
             </Route>
