@@ -9,12 +9,16 @@ import { pipeline } from 'node:stream/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-// SmolLM2-360M-Instruct — chosen over the larger Qwen2.5-0.5B this
-// project started with specifically for generation speed on-device:
-// ~360M params vs ~630M, roughly half the file size, at some cost to
-// answer quality/nuance. See src/llm/localLLM.js.
+// Llama-3.2-1B-Instruct — replaced SmolLM2-360M-Instruct after real-device
+// testing showed the 360M model too weak to reliably follow the system
+// prompt: it would degenerate into repeated-token loops or outright
+// incoherent output once the grounding context had any noise in it
+// (raw PDF/table-extracted web content, non-English fragments). 1B
+// params is still small enough to run in-browser via wllama, but is a
+// properly instruction-tuned model that stays coherent. See
+// src/llm/localLLM.js.
 const MODEL_URL =
-  'https://huggingface.co/bartowski/SmolLM2-360M-Instruct-GGUF/resolve/main/SmolLM2-360M-Instruct-Q4_K_M.gguf'
+  'https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const destDir = path.join(__dirname, '..', 'public', 'models')

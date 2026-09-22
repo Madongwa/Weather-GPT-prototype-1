@@ -142,7 +142,7 @@ function TrustSourcesScreen() {
             why="Also entirely browser-side (Speech Synthesis API) — same reasoning as speech-to-text."
           />
           <SourceRow
-            label="On-device LLM (SmolLM2-360M)"
+            label="On-device LLM (Llama-3.2-1B)"
             status={localModelAvailable === null ? 'unconfigured' : localModelAvailable ? 'connected' : 'unreachable'}
             why="Phrases the Ask screen's answers from whatever the Grounding Layer found. Runs entirely on-device via llama.cpp/WASM (wllama) — no API key, no network call, no cloud LLM involved. 'Connected' means the bundled model file is present, not that a request was just made."
           />

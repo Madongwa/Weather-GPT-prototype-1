@@ -12,15 +12,15 @@ import { validateAnswer } from './answerValidator'
 // build time (see scripts/fetch-model.mjs, run before `npx cap sync`)
 // so answers work fully offline once installed — not committed to git
 // (frontend/.gitignore) because of its size. On the website, bundling
-// the same ~270MB file isn't an option (Vercel rejects any single
+// the same ~800MB file isn't an option (Vercel rejects any single
 // deployment file over 100MB), so the browser build instead streams it
 // straight from Hugging Face's CDN and lets wllama cache it in
 // IndexedDB (see `useCache` below) so only the very first question
 // pays the download.
-const MODEL_FILENAME = 'SmolLM2-360M-Instruct-Q4_K_M.gguf'
+const MODEL_FILENAME = 'Llama-3.2-1B-Instruct-Q4_K_M.gguf'
 const MODEL_URL = Capacitor.isNativePlatform()
   ? `/models/${MODEL_FILENAME}`
-  : `https://huggingface.co/bartowski/SmolLM2-360M-Instruct-GGUF/resolve/main/${MODEL_FILENAME}`
+  : `https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/${MODEL_FILENAME}`
 
 let wllamaInstance = null
 let loadPromise = null
