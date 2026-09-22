@@ -7,11 +7,11 @@ import { simulateAlert } from '../../api/alerts'
 import { createNotification } from '../../api/notifications'
 import { isSpeechSynthesisSupported } from '../../utils/speech'
 import { useSpeechRecognitionSupport } from '../../hooks/useSpeechRecognitionSupport'
+import { checkLocalModelAvailable } from '../../llm/localLLM'
 import './TrustSourcesScreen.css'
 
 const SOURCE_LABELS = {
   open_meteo: 'Open-Meteo',
-  groq_llm: 'Groq (LLM)',
   tavily_search: 'Tavily (web search)',
   imd: 'IMD',
   wis2_ndma_cap: 'WIS2.0 / NDMA CAP',
@@ -20,8 +20,6 @@ const SOURCE_LABELS = {
 
 const SOURCE_WHY = {
   open_meteo: 'A free public forecast API — the only weather source actually wired up live.',
-  groq_llm:
-    'Phrases the Ask screen\'s answers from whatever the Grounding Layer found. "Connected" means an API key is configured, not that a request was just made.',
   tavily_search:
     'Searches the live web for each question, biased toward IMD and NDMA — the real second grounding source alongside Open-Meteo. Falls back to Open-Meteo-only grounding if unreachable.',
   imd: 'IMD has no public API of its own — Tavily searches mausam.imd.gov.in directly instead, so this stays a "stub" for a dedicated IMD integration even though real IMD content does reach answers now.',
@@ -55,6 +53,7 @@ function TrustSourcesScreen() {
   const [status, setStatus] = useState(null)
   const [statusError, setStatusError] = useState(false)
   const [simulateMessage, setSimulateMessage] = useState('')
+  const [localModelAvailable, setLocalModelAvailable] = useState(null)
   const speechRecognitionSupported = useSpeechRecognitionSupport()
 
   const refreshStatus = () => {
@@ -65,6 +64,9 @@ function TrustSourcesScreen() {
   }
 
   useEffect(refreshStatus, [])
+  useEffect(() => {
+    checkLocalModelAvailable().then(setLocalModelAvailable)
+  }, [])
 
   const handleSimulate = async (scenario) => {
     setSimulateMessage('')
@@ -138,6 +140,11 @@ function TrustSourcesScreen() {
             label="Text-to-speech"
             status={isSpeechSynthesisSupported ? 'connected' : 'unconfigured'}
             why="Also entirely browser-side (Speech Synthesis API) — same reasoning as speech-to-text."
+          />
+          <SourceRow
+            label="On-device LLM (SmolLM2-360M)"
+            status={localModelAvailable === null ? 'unconfigured' : localModelAvailable ? 'connected' : 'unreachable'}
+            why="Phrases the Ask screen's answers from whatever the Grounding Layer found. Runs entirely on-device via llama.cpp/WASM (wllama) — no API key, no network call, no cloud LLM involved. 'Connected' means the bundled model file is present, not that a request was just made."
           />
         </ul>
       </section>

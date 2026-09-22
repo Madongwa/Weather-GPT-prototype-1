@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "vercel-build": "node scripts/fetch-model.mjs && vite build",
+    "model:fetch": "node scripts/fetch-model.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run"
@@ -15,6 +17,7 @@
     "@capacitor/android": "^8.5.2",
     "@capacitor/core": "^8.5.2",
     "@capacitor/geolocation": "^8.2.2",
+    "@wllama/wllama": "^3.6.1",
     "i18next": "^26.4.2",
     "leaflet": "^1.9.4",
     "react": "^19.2.8",

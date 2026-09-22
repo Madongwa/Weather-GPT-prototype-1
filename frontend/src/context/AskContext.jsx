@@ -26,20 +26,20 @@ export function AskProvider({ children }) {
   const [hearAloud, setHearAloud] = useState(false)
 
   // Replaces one turn (matched by id) with an updated version — used
-  // below to fill in the real answer once it arrives, after a "Thinking…"
-  // placeholder was already appended so the UI never sits idle.
+  // below to carry a turn through its status states (see handleAsk)
+  // as the on-device model loads, then generates, then finishes.
   const updateTurn = (id, changes) => {
     setConversation((prev) => prev.map((turn) => (turn.id === id ? { ...turn, ...changes } : turn)))
-    // Only speak once the real (or sample) answer lands — not the
-    // "Thinking…" placeholder.
-    if (hearAloud && changes.answer) speak(changes.answer, SPEECH_LOCALES[language])
+    // Only speak once the real (or sample) answer actually lands — not
+    // a loading-progress or in-progress streamed update.
+    if (hearAloud && changes.status === 'done' && changes.answer) speak(changes.answer, SPEECH_LOCALES[language])
   }
 
   const handleAsk = async (question) => {
     const id = `turn-${Date.now()}`
     setConversation((prev) => [
       ...prev,
-      { id, question, answer: 'Thinking…', grounded: false, sourceLabel: 'Loading' },
+      { id, question, answer: '', status: 'loading-model', progress: 0, grounded: false, sourceLabel: 'Loading' },
     ])
 
     // Demo Mode never calls the backend — same honesty mechanism as the
@@ -48,6 +48,7 @@ export function AskProvider({ children }) {
       updateTurn(id, {
         answer:
           'Sample answer — switch Demo Mode to IMD-only or Hybrid in Trust & Sources to get a real, live response.',
+        status: 'done',
         grounded: true,
         sourceLabel: 'Sample data',
       })
@@ -55,16 +56,30 @@ export function AskProvider({ children }) {
     }
 
     try {
-      const data = await askQuestion({ question, district, role })
+      const data = await askQuestion({
+        question,
+        district,
+        role,
+        // The on-device model's first load reads a ~500MB file — this
+        // is what lets the UI show real "loading model NN%" progress
+        // instead of an indefinite spinner during that wait.
+        onLoadProgress: ({ loaded, total }) => {
+          updateTurn(id, { status: 'loading-model', progress: total ? Math.floor((loaded / total) * 100) : 0 })
+        },
+        onGenerating: () => updateTurn(id, { status: 'thinking', progress: 100 }),
+        onToken: (partialAnswer) => updateTurn(id, { answer: partialAnswer }),
+      })
       updateTurn(id, {
         answer: data.answer,
+        status: 'done',
         grounded: data.grounded,
         sourceLabel: data.source_label,
         sources: data.sources ?? [],
       })
     } catch {
       updateTurn(id, {
-        answer: 'Could not reach the backend just now.',
+        answer: 'Could not get an answer just now — the on-device model may still be loading.',
+        status: 'done',
         grounded: false,
         sourceLabel: 'Unreachable',
       })

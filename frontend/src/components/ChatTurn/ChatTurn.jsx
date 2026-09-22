@@ -1,5 +1,6 @@
 import GroundedFooter from '../GroundedFooter/GroundedFooter'
 import ListenButton from '../ListenButton/ListenButton'
+import ThinkingIndicator from '../ThinkingIndicator/ThinkingIndicator'
 import './ChatTurn.css'
 
 /**
@@ -9,15 +10,21 @@ import './ChatTurn.css'
  * AnswerCard uses — so scrolling this list is a live demonstration of
  * the grounding/citation feature, not just a chat transcript.
  */
-function ChatTurn({ question, answer, grounded, sourceLabel, sources }) {
+function ChatTurn({ question, answer, status, progress, grounded, sourceLabel, sources }) {
+  const inProgress = status === 'loading-model' || status === 'thinking'
+
   return (
     <div className="chat-turn">
       <p className="chat-turn__question">{question}</p>
 
       <div className="chat-turn__answer">
         <div className="chat-turn__answer-row">
-          <p className="chat-turn__answer-text">{answer}</p>
-          <ListenButton text={answer} />
+          {status === 'loading-model' || (status === 'thinking' && !answer) ? (
+            <ThinkingIndicator status={status} progress={progress} />
+          ) : (
+            <p className="chat-turn__answer-text">{answer}</p>
+          )}
+          {!inProgress && <ListenButton text={answer} />}
         </div>
         <GroundedFooter grounded={grounded} sourceLabel={sourceLabel} />
         {sources?.length > 0 && (

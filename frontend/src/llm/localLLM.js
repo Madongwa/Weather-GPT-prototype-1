@@ -1,0 +1,128 @@
+// On-device LLM phrasing step — replaces the old Groq API call (see
+// backend/ask.py's git history). Runs llama.cpp compiled to WASM
+// (wllama) entirely inside the app's WebView, against a small
+// instruct model bundled into the app at build time (see
+// scripts/fetch-model.mjs and vite's public/ dir), so answers are
+// produced fully offline once the app is installed.
+import { Wllama } from '@wllama/wllama/esm/index.js'
+import wllamaWasmUrl from '@wllama/wllama/esm/wasm/wllama.wasm?url'
+import { SYSTEM_PROMPT, buildUserContent, formatAdvisories } from './prompt'
+import { validateAnswer } from './answerValidator'
+
+// Bundled at build time — see scripts/fetch-model.mjs (run via
+// `npm run model:fetch` before `vite build` / `npx cap sync`). Not
+// committed to git (frontend/.gitignore) because of its size.
+const MODEL_URL = '/models/SmolLM2-360M-Instruct-Q4_K_M.gguf'
+
+let wllamaInstance = null
+let loadPromise = null
+
+function getInstance() {
+  if (!wllamaInstance) {
+    wllamaInstance = new Wllama({ default: wllamaWasmUrl })
+  }
+  return wllamaInstance
+}
+
+/**
+ * Loads the bundled model into memory. Idempotent — safe to call on
+ * every question; after the first call it just reuses the in-flight or
+ * already-resolved load. `progressCallback` only fires for the call
+ * that actually starts the load — later concurrent callers just await
+ * the same promise without progress events, which is fine since the UI
+ * only has one turn loading at a time anyway.
+ */
+export function loadModel({ progressCallback } = {}) {
+  if (!loadPromise) {
+    const wllama = getInstance()
+    loadPromise = wllama.loadModelFromUrl(MODEL_URL, {
+      // The system prompt + grounding text + one question comfortably
+      // fits well under 1000 tokens (no multi-turn history is kept per
+      // request) — a smaller context means a smaller KV cache to
+      // allocate and walk, which speeds up every request a little.
+      n_ctx: 2048,
+      useCache: false, // already a local bundled asset — no point caching it a second time in IndexedDB
+      progressCallback,
+    })
+  }
+  return loadPromise
+}
+
+/**
+ * HEAD-checks that the bundled model file is actually present, without
+ * loading the full model into memory — used by Trust & Sources' status
+ * row instead of triggering a multi-hundred-MB load just to show a dot.
+ */
+export async function checkLocalModelAvailable() {
+  try {
+    const response = await fetch(MODEL_URL, { method: 'HEAD' })
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+export class LocalLLMUnavailableError extends Error {}
+
+/**
+ * Mirrors the old backend/ask.py answer_question() — same system
+ * prompt, same grounding shape, same rule-based severity-claim
+ * validator — but runs the actual LLM call on-device.
+ *
+ * `onLoadProgress({ loaded, total })` fires while the (first-time,
+ * ~500MB) model load is in progress; `onGenerating()` fires once
+ * loading is done and token generation actually starts; `onToken(text)`
+ * fires with each partial answer as it streams in — together these are
+ * what let the UI show real "loading model NN%" / "thinking" /
+ * streaming-text states instead of an opaque, unmoving spinner.
+ */
+export async function generateAnswer({
+  question,
+  district,
+  role,
+  weatherSummary,
+  advisories,
+  onLoadProgress,
+  onGenerating,
+  onToken,
+}) {
+  try {
+    await loadModel({ progressCallback: onLoadProgress })
+  } catch (err) {
+    throw new LocalLLMUnavailableError(err?.message ?? String(err))
+  }
+
+  onGenerating?.()
+
+  const wllama = getInstance()
+  const userContent = buildUserContent({ question, district, role, weatherSummary, advisories })
+
+  let fullText = ''
+  try {
+    await wllama.createChatCompletion({
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: userContent },
+      ],
+      // The system prompt asks for 1-3 short sentences — real answers
+      // run well under 100 tokens, so this is a hard ceiling against a
+      // runaway generation, not a target. Lower than before (was 400)
+      // specifically to cap worst-case wait time.
+      max_tokens: 200,
+      temperature: 0.3,
+      stream: true,
+      onData: (chunk) => {
+        const delta = chunk.choices[0]?.delta?.content
+        if (delta) {
+          fullText += delta
+          onToken?.(fullText)
+        }
+      },
+    })
+  } catch (err) {
+    throw new LocalLLMUnavailableError(err?.message ?? String(err))
+  }
+
+  const groundingText = `${weatherSummary ?? ''}\n${formatAdvisories(advisories)}`
+  return validateAnswer(fullText.trim(), groundingText)
+}

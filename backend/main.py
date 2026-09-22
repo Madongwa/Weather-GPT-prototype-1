@@ -3,12 +3,10 @@ WeatherGPT backend — FastAPI app.
 
 /health is a liveness check the frontend polls to drive the connectivity
 dot. /weather and /ask are the two real (non-mock) data routes — Open-
-Meteo, and a Groq LLM call grounded in that same weather data plus a
-live Tavily web search (see ask.py / search.py). /ask's answer also
-passes through a lightweight rule-based validator before it's returned
-(see ask.py's _validate_answer) — a regex check for alert-level claims
-that don't actually appear in the grounding data, not a second LLM call.
-Everything else
+Meteo, and live grounding data (that same weather plus a Tavily web
+search, see ask.py / search.py) for the app's on-device LLM to phrase
+into an answer (see frontend/src/llm/) — no LLM call happens on the
+backend itself. Everything else
 (alerts, sos, reports, notifications, checkins, geofence, status,
 admin) is real, persisted (SQLite via db.py) app functionality, not
 mock data — see each module's own docstring for what's still a stand-in
@@ -19,10 +17,9 @@ import os
 
 from dotenv import load_dotenv
 
-# Must run before ask.py's GROQ_API_KEY / search.py's TAVILY_API_KEY
-# checks happen (per-request, but the env vars need to already be set
-# by then) — loads backend/.env into the process environment. See
-# .env.example.
+# Must run before search.py's TAVILY_API_KEY check happens (per-request,
+# but the env var needs to already be set by then) — loads backend/.env
+# into the process environment. See .env.example.
 load_dotenv()
 
 from fastapi import FastAPI, HTTPException, Query
@@ -37,7 +34,7 @@ import notifications
 import reports
 import sos
 import status as status_router
-from ask import AskUnavailableError, answer_question
+from ask import gather_advisories
 from db import init_db
 from districts import DISTRICT_COORDINATES
 from weather import WeatherUnavailableError, fetch_current_conditions
@@ -124,20 +121,21 @@ async def get_weather(district: str = Query(..., description="One of the sample 
     }
 
 
-class AskRequest(BaseModel):
+class AskContextRequest(BaseModel):
     question: str
     district: str
     role: str = "General citizen"
 
 
 @app.post("/ask")
-async def post_ask(payload: AskRequest):
+async def post_ask(payload: AskContextRequest):
     """
-    LLM-driven Q&A. Tries to fetch live weather for the district first and
-    hands that (plus a live web search biased toward IMD/NDMA — see
-    search.py) to the phrasing LLM as grounding context; `grounded` in
-    the response reflects whether at least one of those live fetches
-    actually succeeded, not whether the answer merely sounds confident.
+    Grounding-only route: fetches live weather for the district (if
+    known) plus a live web search biased toward IMD/NDMA (see
+    search.py), and hands both back as-is. `grounded` reflects whether
+    at least one of those live fetches actually succeeded. The app's
+    on-device LLM (see frontend/src/llm/) turns this into the actual
+    answer — no LLM call happens here.
     """
     coordinates = DISTRICT_COORDINATES.get(payload.district)
     weather_summary: str | None = None
@@ -154,18 +152,9 @@ async def post_ask(payload: AskRequest):
             )
             grounded = True
         except WeatherUnavailableError:
-            pass  # Fall through and let the LLM answer without weather grounding.
+            pass  # Fall through and let the on-device LLM answer without weather grounding.
 
-    try:
-        answer, advisories = await answer_question(
-            question=payload.question,
-            district=payload.district,
-            role=payload.role,
-            weather_summary=weather_summary,
-        )
-    except AskUnavailableError as exc:
-        raise HTTPException(status_code=503, detail="The LLM service is unreachable right now") from exc
-
+    advisories = await gather_advisories(payload.district, payload.question)
     if advisories:
         grounded = True
 
@@ -177,9 +166,8 @@ async def post_ask(payload: AskRequest):
     source_label = f"{' + '.join(source_parts)} · live" if source_parts else "No live data available"
 
     return {
-        "answer": answer,
+        "weather_summary": weather_summary,
         "grounded": grounded,
         "source_label": source_label,
         "sources": advisories,
-        "model": "groq/gpt-oss-120b",
     }

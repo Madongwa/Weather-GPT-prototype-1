@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# On-device LLM weights — ~500MB, fetched via `npm run model:fetch`
+# (see scripts/fetch-model.mjs) instead of being committed.
+public/models/*.gguf
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

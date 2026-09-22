@@ -2,8 +2,8 @@
 Regression tests for the persisted, non-network endpoints (alerts, sos,
 reports, notifications, checkins, geofence, admin). /weather and /ask
 aren't covered here since they call real external services (Open-Meteo,
-Tavily, Groq) — testing those would need network mocking this pass
-doesn't add yet.
+Tavily) — testing those would need network mocking this pass doesn't
+add yet (see test_ask.py for /ask's own mocked-network tests).
 
 Run with `pytest` from the backend/ directory, after:
     pip install -r requirements.txt -r requirements-dev.txt

@@ -24,10 +24,6 @@ async def _check_open_meteo() -> str:
         return "unreachable"
 
 
-def _check_groq() -> str:
-    return "connected" if os.environ.get("GROQ_API_KEY") else "unconfigured"
-
-
 def _check_tavily() -> str:
     return "connected" if os.environ.get("TAVILY_API_KEY") else "unconfigured"
 
@@ -36,12 +32,12 @@ def _check_tavily() -> str:
 async def get_status():
     return {
         "open_meteo": await _check_open_meteo(),
-        "groq_llm": _check_groq(),
         "tavily_search": _check_tavily(),
         "imd": "stub",  # No public IMD API exists — Tavily searches its site instead.
         "wis2_ndma_cap": "stub",  # No public feed access exists.
         "database": "connected",  # If this handler ran at all, sqlite is reachable.
-        # STT/TTS run entirely client-side (browser Web Speech APIs) and
-        # have no backend component to report on — see the frontend's
-        # own capability check in speech.js / TrustSourcesScreen.jsx.
+        # STT/TTS and the phrasing LLM itself all run entirely client-side
+        # (browser Web Speech APIs / on-device wllama) and have no backend
+        # component to report on — see the frontend's own capability
+        # checks in speech.js / localLLM.js / TrustSourcesScreen.jsx.
     }

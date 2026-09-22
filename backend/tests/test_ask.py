@@ -1,35 +1,35 @@
 """
-Covers ask.py's own rule-based answer validator (a pure function, no
-network) and the /ask route's three outcomes: grounded (weather + LLM
-both succeed), ungrounded (unknown district, LLM still answers), and
-unavailable (the LLM call itself fails).
+Covers ask.py's gather_advisories helper (falls back to an empty list
+when Tavily is unavailable rather than raising) and the /ask route's
+two outcomes: grounded (weather and/or web search succeeded) and
+ungrounded (unknown district, no advisories found). The route no
+longer calls an LLM itself — see ask.py's module docstring — so there
+is no "LLM unavailable" case to test here anymore.
 """
 
 import ask
 import main
-from ask import AskUnavailableError
+from search import SearchUnavailableError
 
 
-def test_validate_answer_leaves_unrelated_text_unchanged():
-    answer = "Expect light rain this afternoon in Hyderabad."
-    assert ask._validate_answer(answer, "light rain expected, IMD advisory: no warning") == answer
+async def test_gather_advisories_returns_results(monkeypatch):
+    async def fake_search(district, question):
+        return [{"title": "IMD", "url": "https://imd.gov.in", "content": "..."}]
+
+    monkeypatch.setattr(ask, "search_weather_advisories", fake_search)
+
+    result = await ask.gather_advisories("Hyderabad", "Is it raining?")
+
+    assert result[0]["title"] == "IMD"
 
 
-def test_validate_answer_leaves_supported_severity_term_unchanged():
-    answer = "IMD has issued a red alert for this district."
-    grounding = "IMD advisory: a red alert is in effect for heavy rainfall."
-    assert ask._validate_answer(answer, grounding) == answer
+async def test_gather_advisories_falls_back_to_empty_list_when_unavailable(monkeypatch):
+    async def fake_search(district, question):
+        raise SearchUnavailableError("TAVILY_API_KEY is not configured.")
 
+    monkeypatch.setattr(ask, "search_weather_advisories", fake_search)
 
-def test_validate_answer_flags_unsupported_severity_term():
-    answer = "This is a red alert situation — take shelter immediately."
-    grounding = "Current conditions: light rain, 26C. No advisories found."
-
-    result = ask._validate_answer(answer, grounding)
-
-    assert result != answer
-    assert result.startswith(answer)
-    assert "not found in the current data" in result
+    assert await ask.gather_advisories("Hyderabad", "Is it raining?") == []
 
 
 def test_ask_route_grounded(client, monkeypatch):
@@ -42,12 +42,11 @@ def test_ask_route_grounded(client, monkeypatch):
             "fetched_at": "2026-09-21T12:00",
         }
 
-    async def fake_answer_question(*, question, district, role, weather_summary):
-        assert weather_summary is not None
-        return "It's lightly raining right now.", [{"title": "IMD", "url": "https://imd.gov.in", "content": "..."}]
+    async def fake_gather_advisories(district, question):
+        return [{"title": "IMD", "url": "https://imd.gov.in", "content": "..."}]
 
     monkeypatch.setattr(main, "fetch_current_conditions", fake_fetch)
-    monkeypatch.setattr(main, "answer_question", fake_answer_question)
+    monkeypatch.setattr(main, "gather_advisories", fake_gather_advisories)
 
     response = client.post(
         "/ask", json={"question": "Is it raining?", "district": "Hyderabad", "role": "General citizen"}
@@ -58,15 +57,15 @@ def test_ask_route_grounded(client, monkeypatch):
     assert body["grounded"] is True
     assert "Open-Meteo" in body["source_label"]
     assert "web search" in body["source_label"]
+    assert body["weather_summary"].startswith("Slight rain")
     assert body["sources"][0]["title"] == "IMD"
 
 
 def test_ask_route_ungrounded_unknown_district(client, monkeypatch):
-    async def fake_answer_question(*, question, district, role, weather_summary):
-        assert weather_summary is None
-        return "Live data isn't available for this district right now.", []
+    async def fake_gather_advisories(district, question):
+        return []
 
-    monkeypatch.setattr(main, "answer_question", fake_answer_question)
+    monkeypatch.setattr(main, "gather_advisories", fake_gather_advisories)
 
     response = client.post(
         "/ask", json={"question": "Is it raining?", "district": "Nowhereville", "role": "General citizen"}
@@ -75,20 +74,5 @@ def test_ask_route_ungrounded_unknown_district(client, monkeypatch):
     assert response.status_code == 200
     body = response.json()
     assert body["grounded"] is False
+    assert body["weather_summary"] is None
     assert body["source_label"] == "No live data available"
-
-
-def test_ask_route_llm_unavailable_returns_503(client, monkeypatch):
-    async def fake_answer_question(*, question, district, role, weather_summary):
-        raise AskUnavailableError("GROQ_API_KEY is not configured.")
-
-    monkeypatch.setattr(main, "answer_question", fake_answer_question)
-
-    # An unknown district so the route skips its own fetch_current_conditions
-    # call entirely (no coordinates) — this test is only about the LLM
-    # call failing, not weather grounding.
-    response = client.post(
-        "/ask", json={"question": "Is it raining?", "district": "Nowhereville", "role": "General citizen"}
-    )
-
-    assert response.status_code == 503

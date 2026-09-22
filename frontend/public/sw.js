@@ -36,6 +36,14 @@ self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) return
 
+  // The on-device LLM's model file (see src/llm/localLLM.js) is a
+  // ~500MB static asset already bundled into the app — cloning and
+  // writing a response that size into Cache Storage on every load is
+  // pure overhead (and a real risk of stalling/OOMing on a memory-
+  // constrained phone) for a file that never needs an offline fallback
+  // in the first place. Let the browser handle it directly instead.
+  if (request.url.includes('/models/')) return
+
   event.respondWith(
     fetch(request)
       .then((response) => {

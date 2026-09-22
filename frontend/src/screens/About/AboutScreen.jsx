@@ -23,7 +23,7 @@ const PIPELINE_STEPS = [
   },
   {
     name: 'LLM phrasing',
-    note: "An LLM (served via Groq) turns the grounded facts into a clear, conversational answer tailored to the user's role — it never invents numbers the Grounding Layer didn't supply.",
+    note: "A small LLM (SmolLM2-360M, bundled into the app and run entirely on-device via llama.cpp/WASM) turns the grounded facts into a clear, conversational answer tailored to the user's role — it never invents numbers the Grounding Layer didn't supply, and needs no network or API key to run.",
   },
 ]
 

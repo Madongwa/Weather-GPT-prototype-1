@@ -2,6 +2,7 @@ import { useAppSettings } from '../../context/AppSettingsContext'
 import { useAsk } from '../../context/AskContext'
 import GroundedFooter from '../GroundedFooter/GroundedFooter'
 import DemoTag from '../DemoTag/DemoTag'
+import ThinkingIndicator from '../ThinkingIndicator/ThinkingIndicator'
 import './AnswerCard.css'
 
 /**
@@ -28,7 +29,11 @@ function AnswerCard() {
   return (
     <div className="answer-card">
       {demoMode === 'demo' && <DemoTag />}
-      <p className="answer-card__text">{latestTurn.answer}</p>
+      {latestTurn.status === 'loading-model' || (latestTurn.status === 'thinking' && !latestTurn.answer) ? (
+        <ThinkingIndicator status={latestTurn.status} progress={latestTurn.progress} />
+      ) : (
+        <p className="answer-card__text">{latestTurn.answer}</p>
+      )}
 
       <GroundedFooter grounded={latestTurn.grounded} sourceLabel={latestTurn.sourceLabel} />
 

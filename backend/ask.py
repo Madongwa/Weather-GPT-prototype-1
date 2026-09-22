@@ -1,163 +1,26 @@
 """
-LLM-driven question answering — the Grounding Layer -> Arbiter -> LLM
-phrasing pipeline described on the About screen, now with a real second
-live source: Open-Meteo (current conditions, see weather.py) and
-Tavily-sourced web results biased toward IMD/NDMA (see search.py). The
-"Arbiter" step here is still simple — both sources just get handed to
-the LLM together rather than being algorithmically cross-checked — but
-it's no longer the single-source stand-in the project started with.
+Grounding Layer data-gathering for the Ask pipeline described on the
+About screen. Live weather (see weather.py, called directly from
+main.py) and a Tavily-sourced web search biased toward IMD/NDMA (see
+search.py) are gathered here and handed back to the frontend as-is.
 
-Phrasing runs on Groq (an OpenAI-compatible chat completions API
-hosting open models — a fast-inference platform, not to be confused
-with xAI's similarly-named Grok, which was the original ask here but
-requires paid credits with no free tier; see .env.example) rather than
-Claude. `MODEL` below is a reasoning model (gpt-oss-120b);
-`reasoning_effort: "low"` keeps it fast for a short conversational
-answer instead of spending its token budget on visible chain-of-thought.
+The "LLM phrasing" step that used to live in this file (a Groq call)
+now runs entirely on-device in the app instead — see
+frontend/src/llm/. No LLM call happens on the backend anymore; this
+module is just the live-data half of what used to be the whole /ask
+pipeline.
 """
-
-import logging
-import os
-import re
-
-import httpx
 
 from search import SearchUnavailableError, search_weather_advisories
 
-logger = logging.getLogger(__name__)
 
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = "openai/gpt-oss-120b"
-
-SYSTEM_PROMPT = """You are WeatherGPT, a disaster-preparedness assistant for \
-Indian citizens, built for a Ministry of Earth Sciences / IMD hackathon project.
-
-Answer the user's question in 1-3 short, plain-language sentences, tailored to \
-their stated role (e.g. a farmer cares about harvesting, a driver about road \
-conditions).
-
-Ground every specific claim (temperature, rain, wind, warnings) in the CURRENT \
-CONDITIONS and WEB ADVISORIES data given to you — never invent numbers or \
-forecasts that aren't in that data. If neither is available, say plainly that \
-live data isn't available right now, and give only general, non-specific safety \
-guidance.
-
-Stick to facts — what the weather is and is forecast to be. Don't give step-by-step \
-action plans, checklists, or "you should do X" instructions here; if the user is \
-really asking what to do, answer the factual part and point them to the app's \
-"My Advice" section for role-specific guidance instead of improvising a plan.
-
-Always end with a short reminder that this is decision support, not an official \
-instruction, and to follow IMD/government warnings first."""
-
-
-class AskUnavailableError(Exception):
-    """Raised when the phrasing LLM call itself fails."""
-
-
-# Terms that imply a specific official alert level — the kind of claim
-# that's easy for an LLM to hallucinate (e.g. inventing "red alert" as a
-# dramatic flourish) but dangerous to get wrong. Deliberately narrow: this
-# isn't trying to catch every possible inaccuracy, just this one specific,
-# checkable failure mode.
-SEVERITY_TERMS = re.compile(
-    r"\b(red alert|orange alert|yellow alert|green alert|"
-    r"red warning|orange warning|yellow warning|"
-    r"extremely severe cyclonic storm|very severe cyclonic storm|severe cyclonic storm)\b",
-    re.IGNORECASE,
-)
-
-
-def _validate_answer(answer: str, grounding_text: str) -> str:
+async def gather_advisories(district: str, question: str) -> list[dict]:
     """
-    Rule-based check, not a second LLM call — regex against the same
-    text already in hand, so it adds no latency or cost. If the answer
-    names a specific alert level (see SEVERITY_TERMS) that doesn't
-    appear anywhere in the data the model was actually given, that's a
-    plausible hallucination rather than a grounded claim, so a caveat is
-    appended rather than silently trusting it. Logs instead of raising —
-    a false positive here should degrade to "slightly over-cautious
-    answer," never a broken response.
+    Web search is allowed to fail independently of weather grounding —
+    losing it degrades to Open-Meteo-only grounding rather than failing
+    the whole question.
     """
-    mentioned = {m.group(0).lower() for m in SEVERITY_TERMS.finditer(answer)}
-    if not mentioned:
-        return answer
-
-    grounding_lower = grounding_text.lower()
-    unsupported = {term for term in mentioned if term not in grounding_lower}
-    if not unsupported:
-        return answer
-
-    logger.warning("ask: answer mentioned unsupported severity terms %s", sorted(unsupported))
-    return (
-        f"{answer}\n\n(Note: this mentions an alert level not found in the current data — "
-        "verify with IMD directly before acting on it.)"
-    )
-
-
-def _format_advisories(advisories: list[dict]) -> str:
-    if not advisories:
-        return "No additional web advisories found."
-    return "\n\n".join(f"- {a['title']} ({a['url']}): {a['content'][:400]}" for a in advisories)
-
-
-async def answer_question(
-    question: str,
-    district: str,
-    role: str,
-    weather_summary: str | None,
-) -> tuple[str, list[dict]]:
-    # Checked up front rather than left to raise from inside the SDK/
-    # HTTP call — an unhandled exception here would escape FastAPI's
-    # own exception handling (Starlette's ServerErrorMiddleware sits
-    # outside CORSMiddleware), producing a raw response with no CORS
-    # headers instead of a clean 503. See main.py's /ask route, which
-    # catches AskUnavailableError and turns it into one.
-    if not os.environ.get("GROQ_API_KEY"):
-        raise AskUnavailableError("GROQ_API_KEY is not configured.")
-
-    # The web-search source is allowed to fail independently — losing
-    # it degrades to Open-Meteo-only grounding (the original single-
-    # source behavior) rather than failing the whole question.
     try:
-        advisories = await search_weather_advisories(district, question)
+        return await search_weather_advisories(district, question)
     except SearchUnavailableError:
-        advisories = []
-
-    conditions_text = (
-        weather_summary
-        if weather_summary
-        else "Not available — live weather data could not be fetched for this district."
-    )
-
-    user_content = (
-        f"District: {district}\n"
-        f"Role: {role}\n\n"
-        f"Current conditions:\n{conditions_text}\n\n"
-        f"Web advisories:\n{_format_advisories(advisories)}\n\n"
-        f"Question: {question}"
-    )
-
-    try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            response = await client.post(
-                GROQ_URL,
-                headers={"Authorization": f"Bearer {os.environ['GROQ_API_KEY']}"},
-                json={
-                    "model": MODEL,
-                    "messages": [
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": user_content},
-                    ],
-                    "max_tokens": 400,
-                    "reasoning_effort": "low",
-                },
-            )
-            response.raise_for_status()
-            data = response.json()
-    except httpx.HTTPError as exc:
-        raise AskUnavailableError(str(exc)) from exc
-
-    answer = data["choices"][0]["message"]["content"]
-    answer = _validate_answer(answer, f"{conditions_text}\n{_format_advisories(advisories)}")
-    return answer, advisories
+        return []
