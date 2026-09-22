@@ -117,11 +117,12 @@ export async function generateAnswer({
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userContent },
       ],
-      // The system prompt asks for 1-3 short sentences — real answers
-      // run well under 100 tokens, so this is a hard ceiling against a
-      // runaway generation, not a target. Lower than before (was 400)
-      // specifically to cap worst-case wait time.
-      max_tokens: 150,
+      // The system prompt now asks for 1 short sentence (2 at most) —
+      // real answers run well under 60 tokens, so this is a hard
+      // ceiling against a runaway generation, not a target. Also
+      // caps worst-case wait time, which matters more on-device than
+      // it would server-side.
+      max_tokens: 80,
       temperature: 0.3,
       // A model this small (360M) will readily fall into a degenerate
       // loop — repeating one word (e.g. "the the the...") until it hits
