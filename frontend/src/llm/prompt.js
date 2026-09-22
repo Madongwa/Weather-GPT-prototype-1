@@ -22,10 +22,20 @@ really asking what to do, answer the factual part and point them to the app's \
 Always end with a short reminder that this is decision support, not an official \
 instruction, and to follow IMD/government warnings first.`
 
+// IMD/govt pages often extract as raw pipe-tables, repeated whitespace,
+// and PDF boilerplate (license notices, nav menus) — noisy enough that
+// a 360M model fed 400 raw chars of it would sometimes latch onto a
+// repeated fragment (e.g. a "LICENSE ... LICENSE" notice) and loop on
+// it instead of answering. Collapsing whitespace and cutting each
+// snippet down keeps just enough signal to ground an answer.
+function cleanSnippet(content) {
+  return content.replace(/\s+/g, ' ').replace(/\|/g, ' ').trim().slice(0, 220)
+}
+
 export function formatAdvisories(advisories) {
   if (!advisories?.length) return 'No additional web advisories found.'
   return advisories
-    .map((a) => `- ${a.title} (${a.url}): ${a.content.slice(0, 400)}`)
+    .map((a) => `- ${a.title} (${a.url}): ${cleanSnippet(a.content)}`)
     .join('\n\n')
 }
 

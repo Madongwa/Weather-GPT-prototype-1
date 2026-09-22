@@ -121,8 +121,15 @@ export async function generateAnswer({
       // run well under 100 tokens, so this is a hard ceiling against a
       // runaway generation, not a target. Lower than before (was 400)
       // specifically to cap worst-case wait time.
-      max_tokens: 200,
+      max_tokens: 150,
       temperature: 0.3,
+      // A model this small (360M) will readily fall into a degenerate
+      // loop — repeating one word (e.g. "the the the...") until it hits
+      // max_tokens — especially with noisy grounding text in context.
+      // Penalizing tokens it already used over the last 64 is what
+      // actually breaks that loop; temperature alone doesn't.
+      penalty_repeat: 1.3,
+      penalty_last_n: 64,
       stream: true,
       onData: (chunk) => {
         const delta = chunk.choices[0]?.delta?.content
