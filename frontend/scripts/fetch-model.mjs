@@ -9,16 +9,13 @@ import { pipeline } from 'node:stream/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-// Llama-3.2-1B-Instruct — replaced SmolLM2-360M-Instruct after real-device
-// testing showed the 360M model too weak to reliably follow the system
-// prompt: it would degenerate into repeated-token loops or outright
-// incoherent output once the grounding context had any noise in it
-// (raw PDF/table-extracted web content, non-English fragments). 1B
-// params is still small enough to run in-browser via wllama, but is a
-// properly instruction-tuned model that stays coherent. See
-// src/llm/localLLM.js.
-const MODEL_URL =
-  'https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf'
+// Gemma-3-270M-it — tried SmolLM2-360M-Instruct first (too weak, degenerated
+// into repeated-token loops under noisy grounding context), then
+// Llama-3.2-1B-Instruct (coherent, but its ~800MB download OOM-crashed a
+// real phone). Gemma-3-270M-it is the smallest of the three (~253MB) —
+// Google's current small on-device model. See src/llm/localLLM.js, and
+// answerValidator.js for the fallback if this one turns out weak too.
+const MODEL_URL = 'https://huggingface.co/unsloth/gemma-3-270m-it-GGUF/resolve/main/gemma-3-270m-it-Q4_K_M.gguf'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const destDir = path.join(__dirname, '..', 'public', 'models')
