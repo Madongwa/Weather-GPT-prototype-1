@@ -1,18 +1,26 @@
 // On-device LLM phrasing step — replaces the old Groq API call (see
 // backend/ask.py's git history). Runs llama.cpp compiled to WASM
 // (wllama) entirely inside the app's WebView, against a small
-// instruct model bundled into the app at build time (see
-// scripts/fetch-model.mjs and vite's public/ dir), so answers are
-// produced fully offline once the app is installed.
+// instruct model, so no cloud LLM call happens anywhere in this path.
+import { Capacitor } from '@capacitor/core'
 import { Wllama } from '@wllama/wllama/esm/index.js'
 import wllamaWasmUrl from '@wllama/wllama/esm/wasm/wllama.wasm?url'
 import { SYSTEM_PROMPT, buildUserContent, formatAdvisories } from './prompt'
 import { validateAnswer } from './answerValidator'
 
-// Bundled at build time — see scripts/fetch-model.mjs (run via
-// `npm run model:fetch` before `vite build` / `npx cap sync`). Not
-// committed to git (frontend/.gitignore) because of its size.
-const MODEL_URL = '/models/SmolLM2-360M-Instruct-Q4_K_M.gguf'
+// In the packaged Android app, the model is bundled into the APK at
+// build time (see scripts/fetch-model.mjs, run before `npx cap sync`)
+// so answers work fully offline once installed — not committed to git
+// (frontend/.gitignore) because of its size. On the website, bundling
+// the same ~270MB file isn't an option (Vercel rejects any single
+// deployment file over 100MB), so the browser build instead streams it
+// straight from Hugging Face's CDN and lets wllama cache it in
+// IndexedDB (see `useCache` below) so only the very first question
+// pays the download.
+const MODEL_FILENAME = 'SmolLM2-360M-Instruct-Q4_K_M.gguf'
+const MODEL_URL = Capacitor.isNativePlatform()
+  ? `/models/${MODEL_FILENAME}`
+  : `https://huggingface.co/bartowski/SmolLM2-360M-Instruct-GGUF/resolve/main/${MODEL_FILENAME}`
 
 let wllamaInstance = null
 let loadPromise = null
@@ -41,7 +49,11 @@ export function loadModel({ progressCallback } = {}) {
       // request) — a smaller context means a smaller KV cache to
       // allocate and walk, which speeds up every request a little.
       n_ctx: 2048,
-      useCache: false, // already a local bundled asset — no point caching it a second time in IndexedDB
+      // Native app: already a local bundled asset, no point caching it a
+      // second time in IndexedDB. Website: MODEL_URL is a remote HF
+      // download, so this is what makes every question after the first
+      // one skip re-downloading ~270MB.
+      useCache: !Capacitor.isNativePlatform(),
       progressCallback,
     })
   }
@@ -49,9 +61,10 @@ export function loadModel({ progressCallback } = {}) {
 }
 
 /**
- * HEAD-checks that the bundled model file is actually present, without
- * loading the full model into memory — used by Trust & Sources' status
- * row instead of triggering a multi-hundred-MB load just to show a dot.
+ * HEAD-checks that the model file is reachable (bundled locally in the
+ * app, or on Hugging Face's CDN on the website) without loading the
+ * full model into memory — used by Trust & Sources' status row instead
+ * of triggering a multi-hundred-MB load just to show a dot.
  */
 export async function checkLocalModelAvailable() {
   try {

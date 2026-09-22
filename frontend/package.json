@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "vercel-build": "node scripts/fetch-model.mjs && vite build",
     "model:fetch": "node scripts/fetch-model.mjs",
     "lint": "oxlint",
     "preview": "vite preview",

@@ -1,0 +1,16 @@
+# The website build fetches the on-device LLM from Hugging Face at
+# runtime instead of bundling it (see src/llm/localLLM.js) — Vercel
+# rejects any single deployment file over 100MB, and this ~270MB GGUF
+# is only needed for the packaged Android app's local bundle.
+public/models
+
+# The Capacitor Android project (gradle wrapper, build/ output, etc.)
+# — irrelevant to the website deploy and large enough on its own to
+# make source uploads slow/fail.
+android
+
+# Vercel builds from source remotely — no need to upload a local build
+# or reinstall cache.
+dist
+node_modules
+

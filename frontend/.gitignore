@@ -28,3 +28,4 @@ public/models/*.gguf
 *.sw?
 
 .vercel
+.env*
